@@ -1,0 +1,126 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Trusted Online Pharmacy</div>
+      <h1>Your Health, <span class="gradient-text">Our Priority</span></h1>
+      <p>Order medicines online with ease. Fast delivery, authentic products, and expert care — all in one place.</p>
+      <div class="hero-actions">
+        <a routerLink="/medicines" class="btn-hero-primary">Browse Medicines &rarr;</a>
+        @if (!auth.isLoggedIn()) {
+          <a routerLink="/register" class="btn-hero-secondary">Get Started</a>
+        } @else {
+          <a routerLink="/orders" class="btn-hero-secondary">My Orders</a>
+        }
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-stats">
+          @for (stat of stats; track stat.label) {
+            <div class="stat-item">
+              <span class="stat-value">{{ stat.value }}</span>
+              <span class="stat-label">{{ stat.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="section-container">
+      <h2 class="section-title">Why Choose PharmaOnline?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3>100% Authentic</h3>
+          <p>All medicines sourced directly from certified manufacturers and distributors.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3>Prescription Management</h3>
+          <p>Upload prescriptions digitally. Our pharmacists review and approve within hours.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+          </div>
+          <h3>Express Delivery</h3>
+          <p>Same-day delivery available in select cities. Track your order in real-time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <h3>Secure Payments</h3>
+          <p>Pay via UPI, Card, or Cash on Delivery. All transactions are encrypted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Medicines -->
+  <section class="featured-medicines">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Featured Medicines</h2>
+        <a routerLink="/medicines" class="view-all">View All &rarr;</a>
+      </div>
+
+      @if (loading) {
+        <div class="loading-grid">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="skeleton-card"></div>
+          }
+        </div>
+      } @else {
+        <div class="medicines-grid">
+          @for (medicine of featuredMedicines; track medicine.id) {
+            <div class="medicine-card">
+              <div class="medicine-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              </div>
+              @if (medicine.requiresPrescription) {
+                <span class="rx-badge">Rx</span>
+              }
+              <h3>{{ medicine.name }}</h3>
+              <p class="medicine-desc">{{ medicine.description || 'Quality medicine' }}</p>
+              <div class="medicine-meta">
+                <span class="stock" [class.low]="medicine.stockQuantity <= 10">
+                  {{ medicine.stockQuantity > 0 ? 'In Stock (' + medicine.stockQuantity + ')' : 'Out of Stock' }}
+                </span>
+              </div>
+              <div class="medicine-footer">
+                <span class="price">&#8377;{{ medicine.price | number:'1.2-2' }}</span>
+                @if (auth.isLoggedIn()) {
+                  <button class="btn-add-cart" (click)="addToCart(medicine)" [disabled]="medicine.stockQuantity === 0">Add to Cart</button>
+                } @else {
+                  <a routerLink="/login" class="btn-add-cart">Login to Buy</a>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (!auth.isLoggedIn()) {
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to get started?</h2>
+        <p>Join thousands of customers who trust PharmaOnline for their healthcare needs.</p>
+        <div class="cta-actions">
+          <a routerLink="/register" class="btn-cta-primary">Create Account</a>
+          <a routerLink="/login" class="btn-cta-secondary">Sign In</a>
+        </div>
+      </div>
+    </section>
+  }
+</div>

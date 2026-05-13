@@ -1,0 +1,71 @@
+<div class="admin-notifications">
+  <div class="section-header">
+    <div>
+      <h1>Send Notification</h1>
+      <p>Send direct notifications to customers</p>
+    </div>
+  </div>
+
+  <div class="notification-layout">
+    <div class="notification-form-card">
+      @if (success) { <div class="alert alert-success">{{ success }}</div> }
+      @if (error) { <div class="alert alert-error">{{ error }}</div> }
+
+      <div class="form-group">
+        <label>Recipient Email *</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" [(ngModel)]="form.recipientEmail" placeholder="customer@example.com" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notification Type</label>
+        <select [(ngModel)]="form.type">
+          @for (type of notificationTypes; track type) { <option [value]="type">{{ type }}</option> }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Subject *</label>
+        <input type="text" [(ngModel)]="form.subject" placeholder="e.g. Your order has been shipped" />
+      </div>
+
+      <div class="form-group">
+        <label>Message *</label>
+        <textarea [(ngModel)]="form.message" rows="5" placeholder="Enter your notification message..."></textarea>
+      </div>
+
+      <button class="btn-send" (click)="send()" [disabled]="loading">
+        @if (loading) { <span class="spinner"></span> Sending... }
+        @else { Send Notification }
+      </button>
+    </div>
+
+    <div class="notification-info">
+      <h2>Notification Types</h2>
+      <div class="type-list">
+        @for (type of notificationTypes; track type) {
+          <div class="type-item" (click)="form.type = type" [class.selected]="form.type === type">
+            <span>{{ type }}</span>
+          </div>
+        }
+      </div>
+
+      @if (sentLog.length > 0) {
+        <div class="sent-log">
+          <h3>Recently Sent</h3>
+          @for (log of sentLog; track log.time) {
+            <div class="log-item">
+              <div class="log-info">
+                <span class="log-to">{{ log.to }}</span>
+                <span class="log-subject">{{ log.subject }}</span>
+                <span class="log-time">{{ log.time | date:'HH:mm:ss' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,3 @@
+com\capg\pharma\notificationservice\listener\NotificationListenerFullTest.class
+com\capg\pharma\notificationservice\service\EmailServiceTest.class
+com\capg\pharma\notificationservice\listener\NotificationListenerTest.class

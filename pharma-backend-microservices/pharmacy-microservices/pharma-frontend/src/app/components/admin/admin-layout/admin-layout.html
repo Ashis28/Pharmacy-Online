@@ -1,0 +1,55 @@
+<div class="admin-layout" [class.sidebar-collapsed]="!sidebarOpen">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🛡️</span>
+        @if (sidebarOpen) {
+          <span class="brand-text">Admin Panel</span>
+        }
+      </div>
+      <button class="toggle-btn" (click)="sidebarOpen = !sidebarOpen">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">{{ item.icon }}</span>
+          @if (sidebarOpen) {
+            <span class="nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-info" [style.display]="sidebarOpen ? 'flex' : 'none'">
+        <span class="admin-avatar">👤</span>
+        <div>
+          <p class="admin-name">{{ auth.currentUser()?.name }}</p>
+          <p class="admin-role">Administrator</p>
+        </div>
+      </div>
+      <a routerLink="/home" class="btn-exit">
+        <span>🏠</span>
+        @if (sidebarOpen) { <span>Exit Admin</span> }
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <div class="topbar-actions">
+        <span class="admin-badge">🛡️ Admin</span>
+        <button class="btn-logout" (click)="auth.logout()">Logout</button>
+      </div>
+    </div>
+    <div class="admin-content">
+      <router-outlet />
+    </div>
+  </main>
+</div>

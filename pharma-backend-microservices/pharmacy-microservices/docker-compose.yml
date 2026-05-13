@@ -1,0 +1,196 @@
+version: '3.8'
+
+services:
+
+  # ─── RabbitMQ ─────────────────────────
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pharmacy-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - pharmacy-net
+
+  # ─── Zipkin ───────────────────────────
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: pharmacy-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - pharmacy-net
+
+  # ─── MySQL ────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: pharmacy-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "Janu@0307"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - pharmacy-net
+
+  # ─── Eureka ───────────────────────────
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - pharmacy-net
+
+  # ─── Config Server ────────────────────
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_HOST=eureka-server
+    depends_on:
+      - eureka-server
+    networks:
+      - pharmacy-net
+
+  # ─── Gateway ──────────────────────────
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_HOST=eureka-server
+      - JWT_SECRET=pharmacy_super_secret_key_for_hs256_min_32chars
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - eureka-server
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Auth ─────────────────────────────
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "9091:9091"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=Janu@0307
+      - EUREKA_HOST=eureka-server
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - mysql
+      - eureka-server
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Catalog ──────────────────────────
+  catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    ports:
+      - "9092:9092"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=Janu@0307
+      - EUREKA_HOST=eureka-server
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - mysql
+      - eureka-server
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Order ──────────────────────────────
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "9093:9093"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=Janu@0307
+      - EUREKA_HOST=eureka-server
+      - RABBITMQ_HOST=rabbitmq
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - mysql
+      - eureka-server
+      - rabbitmq
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Admin ────────────────────────────
+  admin-service:
+    build: ./admin-service
+    container_name: admin-service
+    ports:
+      - "9094:9094"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=Janu@0307
+      - EUREKA_HOST=eureka-server
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - mysql
+      - eureka-server
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Payment ──────────────────────────
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "9095:9095"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=Janu@0307
+      - EUREKA_HOST=eureka-server
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - mysql
+      - eureka-server
+      - zipkin
+    networks:
+      - pharmacy-net
+
+  # ─── Notification ─────────────────────
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "9096:9096"
+    environment:
+      - EUREKA_HOST=eureka-server
+      - RABBITMQ_HOST=rabbitmq
+      - ZIPKIN_HOST=zipkin
+    depends_on:
+      - eureka-server
+      - rabbitmq
+      - zipkin
+    networks:
+      - pharmacy-net
+
+# ─── Volumes ────────────────────────────
+volumes:
+  mysql-data:
+
+# ─── Network ────────────────────────────
+networks:
+  pharmacy-net:
+    driver: bridge

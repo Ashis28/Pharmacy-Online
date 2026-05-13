@@ -1,0 +1,629 @@
+================================================================================
+  COMPLETE SWAGGER TESTING GUIDE - Pharma Microservices Platform
+================================================================================
+
+  Single entry point: http://localhost:8888/swagger-ui.html
+  All requests go through the gateway. JWT is validated at the gateway.
+
+================================================================================
+BEFORE YOU START
+================================================================================
+
+Make sure all services are running. Check the Eureka dashboard:
+  http://localhost:8761
+
+You should see all 6 services registered:
+  AUTH-SERVICE, CATALOG-SERVICE, ORDER-SERVICE,
+  ADMIN-SERVICE, PAYMENT-SERVICE, NOTIFICATION-SERVICE
+
+Open the Swagger UI:
+  http://localhost:8888/swagger-ui.html
+
+Use the dropdown in the TOP-RIGHT corner to switch between services.
+
+================================================================================
+STEP 1 — CREATE USERS (no token needed)
+================================================================================
+
+Select "Auth Service" from the dropdown.
+
+------------------------------------------------------------------------
+1A. Create a CUSTOMER account
+------------------------------------------------------------------------
+
+Endpoint : POST /api/auth/signup
+Click    : "Try it out" → "Execute"
+
+Request body:
+{
+  "name": "John Customer",
+  "email": "john@pharmacy.com",
+  "password": "password123",
+  "roles": ["CUSTOMER"]
+}
+
+Expected response: 201 Created
+  "User registered successfully"
+
+------------------------------------------------------------------------
+1B. Create an ADMIN account
+------------------------------------------------------------------------
+
+Endpoint : POST /api/auth/signup
+Request body:
+{
+  "name": "Admin User",
+  "email": "admin@pharmacy.com",
+  "password": "admin123",
+  "roles": ["ADMIN"]
+}
+
+Expected response: 201 Created
+  "User registered successfully"
+
+------------------------------------------------------------------------
+1C. Edge cases to try
+------------------------------------------------------------------------
+
+Duplicate email → 409 Conflict:
+{
+  "name": "Duplicate",
+  "email": "john@pharmacy.com",
+  "password": "password123",
+  "roles": ["CUSTOMER"]
+}
+
+Invalid email format → 400 Bad Request:
+{
+  "name": "Bad Email",
+  "email": "not-an-email",
+  "password": "password123"
+}
+
+Blank name → 400 Bad Request:
+{
+  "name": "",
+  "email": "test@pharmacy.com",
+  "password": "password123"
+}
+
+================================================================================
+STEP 2 — LOGIN AND GET YOUR JWT TOKEN
+================================================================================
+
+Still on "Auth Service".
+
+------------------------------------------------------------------------
+2A. Login as CUSTOMER
+------------------------------------------------------------------------
+
+Endpoint : POST /api/auth/login
+Request body:
+{
+  "email": "john@pharmacy.com",
+  "password": "password123"
+}
+
+Expected response: 200 OK
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "name": "John Customer",
+  "roles": ["CUSTOMER"]
+}
+
+COPY THE TOKEN VALUE. You will need it in the next step.
+
+------------------------------------------------------------------------
+2B. Edge cases to try
+------------------------------------------------------------------------
+
+Wrong password → 401 Unauthorized:
+{
+  "email": "john@pharmacy.com",
+  "password": "wrongpassword"
+}
+
+Email not registered → 404 Not Found:
+{
+  "email": "nobody@pharmacy.com",
+  "password": "password123"
+}
+
+================================================================================
+STEP 3 — AUTHORIZE IN SWAGGER UI
+================================================================================
+
+1. Click the "Authorize" button (lock icon, top-right of the Swagger UI page)
+2. In the "Bearer Authentication" field, type:
+     Bearer eyJhbGciOiJIUzI1NiJ9...
+   (paste your full token after the word "Bearer " with a space)
+3. Click "Authorize" → "Close"
+
+The lock icons on each endpoint will now appear CLOSED, meaning the token
+will be sent automatically with every request.
+
+NOTE: The token lasts 24 hours. If you get 401 errors later, log in again
+and re-authorize with the new token.
+
+================================================================================
+STEP 4 — CATALOG SERVICE (browse medicines)
+================================================================================
+
+Switch to "Catalog Service" in the dropdown.
+
+------------------------------------------------------------------------
+4A. Get all medicines (CUSTOMER or ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/catalog/medicines
+No request body needed.
+
+Expected response: 200 OK — array of medicines
+[
+  {
+    "id": 1,
+    "name": "Paracetamol",
+    "description": "Pain reliever",
+    "price": 25.00,
+    "stockQuantity": 100,
+    "requiresPrescription": false,
+    "expiryDate": "2027-12-31",
+    "categoryName": "Pain Relief"
+  }
+]
+
+If the catalog is empty (first run), you will get an empty array [].
+Add medicines first using the Admin flow in Step 6.
+
+------------------------------------------------------------------------
+4B. Get medicine by ID (CUSTOMER or ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/catalog/medicines/{id}
+Path param: id = 1
+
+Expected response: 200 OK — single medicine object
+Expected if not found: 404 Not Found
+
+------------------------------------------------------------------------
+4C. Search medicines by name (CUSTOMER or ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/catalog/medicines/search
+Query param: name = para
+
+Expected response: 200 OK — array of matching medicines (case-insensitive)
+
+------------------------------------------------------------------------
+4D. Get low stock count (ADMIN only)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/catalog/medicines/low-stock-count
+
+Expected response: 200 OK — a number, e.g. 3
+Expected if CUSTOMER token: 403 Forbidden
+
+------------------------------------------------------------------------
+4E. Upload a prescription (CUSTOMER)
+------------------------------------------------------------------------
+
+Switch to "Catalog Service" → Prescriptions section.
+
+Endpoint : POST /api/catalog/prescriptions/upload
+Request body:
+{
+  "customerId": "1",
+  "imageUrl": "https://example.com/prescription.jpg"
+}
+
+Expected response: 200 OK
+{
+  "id": 1,
+  "customerId": 1,
+  "customerEmail": "john@pharmacy.com",
+  "imageUrl": "https://example.com/prescription.jpg",
+  "status": "PENDING",
+  "uploadedAt": "2026-04-30T10:00:00"
+}
+
+------------------------------------------------------------------------
+4F. View my prescriptions (CUSTOMER)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/catalog/prescriptions/my
+Query param: customerId = 1
+
+Expected response: 200 OK — list of your prescriptions
+
+================================================================================
+STEP 5 — ORDER SERVICE (place and track orders)
+================================================================================
+
+Switch to "Order Service" in the dropdown.
+Make sure you have a CUSTOMER token authorized.
+Make sure at least one medicine exists in the catalog (see Step 6 to add one first).
+
+------------------------------------------------------------------------
+5A. Place an order (CUSTOMER)
+------------------------------------------------------------------------
+
+Endpoint : POST /api/orders
+Request body:
+{
+  "customerId": 1,
+  "deliveryAddress": "123 Main Street, Chennai",
+  "items": [
+    {
+      "medicineId": 1,
+      "quantity": 2
+    }
+  ]
+}
+
+Expected response: 201 Created
+{
+  "id": 1,
+  "customerId": 1,
+  "customerEmail": "john@pharmacy.com",
+  "status": "PENDING",
+  "totalAmount": 50.00,
+  "deliveryAddress": "123 Main Street, Chennai",
+  "createdAt": "2026-04-30T10:00:00",
+  "items": [
+    {
+      "medicineId": 1,
+      "medicineName": "Paracetamol",
+      "quantity": 2,
+      "unitPrice": 25.00
+    }
+  ]
+}
+
+NOTE: The total is calculated automatically from the medicine price × quantity.
+NOTE: A notification is published to RabbitMQ in the background.
+
+------------------------------------------------------------------------
+5B. Get order by ID (CUSTOMER or ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/orders/{id}
+Path param: id = 1
+
+Expected response: 200 OK — order object
+Expected if not found: 404 Not Found
+
+------------------------------------------------------------------------
+5C. Get orders by customer (CUSTOMER or ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/orders/customer/{customerId}
+Path param: customerId = 1
+
+Expected response: 200 OK — list of orders for that customer
+
+------------------------------------------------------------------------
+5D. Edge cases to try
+------------------------------------------------------------------------
+
+Non-existent medicine in order → 400 Bad Request:
+{
+  "customerId": 1,
+  "deliveryAddress": "123 Main St",
+  "items": [{ "medicineId": 9999, "quantity": 1 }]
+}
+
+Empty items list → 400 Bad Request:
+{
+  "customerId": 1,
+  "deliveryAddress": "123 Main St",
+  "items": []
+}
+
+================================================================================
+STEP 6 — ADMIN SERVICE (requires ADMIN token)
+================================================================================
+
+Log out of the CUSTOMER token first:
+  Click "Authorize" → "Logout" → close
+
+Log in as admin (Step 2A but with admin credentials), copy the token,
+then Authorize again with the ADMIN token.
+
+Switch to "Admin Service" in the dropdown.
+
+------------------------------------------------------------------------
+6A. View the dashboard (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/admin/dashboard
+
+Expected response: 200 OK
+{
+  "totalOrders": 5,
+  "pendingPrescriptions": 2,
+  "lowStockCount": 1,
+  "monthlyRevenue": 1250.00
+}
+
+------------------------------------------------------------------------
+6B. Add a medicine (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : POST /api/admin/medicines
+Request body:
+{
+  "name": "Paracetamol",
+  "description": "Pain reliever and fever reducer",
+  "price": 25.00,
+  "stockQuantity": 100,
+  "requiresPrescription": false,
+  "expiryDate": "2027-12-31",
+  "categoryId": null
+}
+
+Expected response: 201 Created — medicine object with generated id
+
+To add a medicine that requires a prescription:
+{
+  "name": "Amoxicillin",
+  "description": "Antibiotic",
+  "price": 85.00,
+  "stockQuantity": 50,
+  "requiresPrescription": true,
+  "expiryDate": "2026-06-30",
+  "categoryId": null
+}
+
+------------------------------------------------------------------------
+6C. Update a medicine (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : PUT /api/admin/medicines/{id}
+Path param: id = 1
+Request body (same shape as create, all fields):
+{
+  "name": "Paracetamol 500mg",
+  "description": "Updated description",
+  "price": 30.00,
+  "stockQuantity": 150,
+  "requiresPrescription": false,
+  "expiryDate": "2027-12-31",
+  "categoryId": null
+}
+
+Expected response: 200 OK — updated medicine object
+
+------------------------------------------------------------------------
+6D. Delete a medicine (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : DELETE /api/admin/medicines/{id}
+Path param: id = 1
+
+Expected response: 204 No Content
+
+------------------------------------------------------------------------
+6E. View pending prescriptions (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/admin/prescriptions/pending
+
+Expected response: 200 OK — list of prescriptions with status PENDING
+[
+  {
+    "id": 1,
+    "customerId": 1,
+    "customerEmail": "john@pharmacy.com",
+    "imageUrl": "https://example.com/prescription.jpg",
+    "status": "PENDING",
+    "uploadedAt": "2026-04-30T10:00:00"
+  }
+]
+
+------------------------------------------------------------------------
+6F. Approve a prescription (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : PUT /api/admin/prescriptions/{id}/approve
+Path param: id = 1
+No request body needed.
+
+Expected response: 200 OK — prescription with status APPROVED
+
+------------------------------------------------------------------------
+6G. Reject a prescription (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : PUT /api/admin/prescriptions/{id}/reject
+Path param: id = 1
+Request body:
+{
+  "reason": "Image is blurry, please re-upload"
+}
+
+Expected response: 200 OK — prescription with status REJECTED and rejectionReason set
+
+------------------------------------------------------------------------
+6H. View all orders (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : GET /api/admin/orders
+
+Expected response: 200 OK — list of all orders across all customers
+
+------------------------------------------------------------------------
+6I. Update order status (ADMIN)
+------------------------------------------------------------------------
+
+Endpoint : PUT /api/admin/orders/{id}/status
+Path param: id = 1
+Request body:
+{
+  "status": "PACKED"
+}
+
+Valid status values (must be UPPERCASE):
+  PENDING → PAID → PACKED → SHIPPED → DELIVERED → CANCELLED
+
+Expected response: 200 OK — order with updated status
+Expected if invalid status: 400 Bad Request
+
+Try an invalid status to see the error:
+{
+  "status": "CONFIRMED"
+}
+→ 400 Bad Request (CONFIRMED is not a valid status)
+
+================================================================================
+STEP 7 — PAYMENT SERVICE
+================================================================================
+
+Switch to "Payment Service" in the dropdown.
+Use either CUSTOMER or ADMIN token.
+
+------------------------------------------------------------------------
+7A. Process a payment
+------------------------------------------------------------------------
+
+Endpoint : POST /api/payments/process
+Request body:
+{
+  "orderId": 1,
+  "customerId": 1,
+  "amount": 50.00,
+  "paymentMethod": "CARD"
+}
+
+Expected response: 200 OK
+{
+  "paymentId": 1,
+  "orderId": 1,
+  "amount": 50.00,
+  "status": "SUCCESS",
+  "transactionId": "TXN-A1B2C3D4",
+  "createdAt": "2026-04-30T10:00:00"
+}
+
+NOTE: Payment always returns SUCCESS — real gateway integration is a TODO.
+NOTE: paymentMethod is a free-text field. Use: CARD, UPI, CASH, NETBANKING, etc.
+
+------------------------------------------------------------------------
+7B. Get payment by order ID
+------------------------------------------------------------------------
+
+Endpoint : GET /api/payments/order/{orderId}
+Path param: orderId = 1
+
+Expected response: 200 OK — payment record
+Expected if no payment for that order: 404 Not Found
+
+================================================================================
+STEP 8 — NOTIFICATION SERVICE
+================================================================================
+
+Switch to "Notification Service" in the dropdown.
+
+------------------------------------------------------------------------
+8A. Send a manual notification (test only)
+------------------------------------------------------------------------
+
+Endpoint : POST /api/notifications/send
+Request body:
+{
+  "recipientEmail": "john@pharmacy.com",
+  "subject": "Test Notification",
+  "message": "This is a test message from Swagger",
+  "type": "ORDER_PLACED"
+}
+
+Expected response: 200 OK
+  "Notification processed for: john@pharmacy.com"
+
+NOTE: This logs the notification to the console. Actual email/SMS delivery
+is not implemented yet (marked as TODO in NotificationListener).
+
+================================================================================
+FULL END-TO-END FLOW (recommended test sequence)
+================================================================================
+
+Follow these steps in order to test the complete customer journey:
+
+  1.  POST /api/auth/signup          → create ADMIN account
+  2.  POST /api/auth/signup          → create CUSTOMER account
+  3.  POST /api/auth/login           → login as ADMIN, copy token, Authorize
+  4.  POST /api/admin/medicines      → add 2-3 medicines
+  5.  GET  /api/admin/dashboard      → verify medicines show up
+  6.  POST /api/auth/login           → login as CUSTOMER, copy token, re-Authorize
+  7.  GET  /api/catalog/medicines    → browse the catalog
+  8.  GET  /api/catalog/medicines/search?name=para  → search
+  9.  POST /api/catalog/prescriptions/upload        → upload a prescription
+  10. POST /api/orders               → place an order (note the order id)
+  11. GET  /api/orders/{id}          → verify order was created
+  12. POST /api/payments/process     → pay for the order
+  13. GET  /api/payments/order/{id}  → verify payment record
+  14. POST /api/auth/login           → login as ADMIN again, re-Authorize
+  15. GET  /api/admin/dashboard      → see updated order count and revenue
+  16. GET  /api/admin/prescriptions/pending         → see the uploaded prescription
+  17. PUT  /api/admin/prescriptions/{id}/approve    → approve it
+  18. PUT  /api/admin/orders/{id}/status            → update order to SHIPPED
+  19. GET  /api/admin/orders         → verify final state
+
+================================================================================
+COMMON ERRORS AND FIXES
+================================================================================
+
+401 Unauthorized
+  → Token is missing, expired, or malformed.
+  → Fix: Log in again, copy the new token, click Authorize and re-enter it.
+  → Make sure you typed "Bearer " (with a space) before the token.
+
+403 Forbidden
+  → You are authenticated but your role doesn't have access.
+  → Fix: Log in with an ADMIN account for admin-only endpoints.
+
+404 Not Found
+  → The resource ID doesn't exist.
+  → Fix: Check the ID. Use a GET-all endpoint first to find valid IDs.
+
+400 Bad Request
+  → Validation failed or invalid field value.
+  → Fix: Read the "message" or "fieldErrors" in the response body.
+  → Common causes: blank required fields, negative price/stock, invalid status.
+
+503 Service Unavailable
+  → A downstream service is down (e.g. catalog-service is not running).
+  → Fix: Check that all services are registered in Eureka at http://localhost:8761.
+
+500 Internal Server Error
+  → Usually a database connection issue or a bug.
+  → Fix: Check the service logs in the terminal where it's running.
+
+Swagger UI shows "Failed to fetch" or empty dropdown
+  → The gateway or the target service is not running.
+  → Fix: Restart the service and wait for it to register with Eureka (~30 seconds).
+
+================================================================================
+TIPS
+================================================================================
+
+- You only need to Authorize ONCE per session. The token applies to all services
+  in the dropdown until you click Logout or the browser tab is closed.
+
+- After switching services in the dropdown, you do NOT need to re-authorize.
+  The same token stays active.
+
+- The "Execute" button sends the real HTTP request. Changes you make (add medicine,
+  place order) are real and stored in the database.
+
+- Use GET endpoints to verify your data after every POST/PUT/DELETE.
+
+- The order of operations matters:
+    - You must add medicines before placing orders.
+    - You must place an order before processing a payment for it.
+    - You must upload a prescription before approving/rejecting it.
+
+- To reset all data, restart MySQL with a fresh volume:
+    docker-compose down -v
+    docker-compose up --build
+
+================================================================================

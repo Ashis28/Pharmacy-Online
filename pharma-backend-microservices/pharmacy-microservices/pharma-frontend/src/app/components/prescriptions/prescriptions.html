@@ -1,0 +1,100 @@
+<div class="prescriptions-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📋 My Prescriptions</h1>
+      <p>Upload and track your prescription approvals</p>
+    </div>
+  </div>
+
+  <div class="prescriptions-body">
+    <!-- Upload Section -->
+    <div class="upload-card">
+      <h2>Upload New Prescription</h2>
+      <p class="upload-info">
+        Upload a prescription image URL. Our pharmacists will review and approve it within a few hours.
+        Approved prescriptions allow you to purchase prescription-required medicines.
+      </p>
+
+      @if (error) {
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+      }
+      @if (success) {
+        <div class="alert alert-success">✅ {{ success }}</div>
+      }
+
+      <div class="upload-form">
+        <div class="input-group">
+          <label>Prescription Image URL</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔗</span>
+            <input
+              type="url"
+              [(ngModel)]="imageUrl"
+              placeholder="https://example.com/prescription.jpg"
+            />
+          </div>
+          <span class="hint">Enter the URL of your prescription image (JPG, PNG, PDF)</span>
+        </div>
+
+        <button class="btn-upload" (click)="uploadPrescription()" [disabled]="uploading">
+          @if (uploading) {
+            <span class="spinner"></span> Uploading...
+          } @else {
+            📤 Upload Prescription
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Prescriptions List -->
+    <div class="prescriptions-list">
+      <h2>My Prescriptions</h2>
+
+      @if (loading) {
+        <div class="loading-state">
+          <div class="spinner-large"></div>
+          <p>Loading prescriptions...</p>
+        </div>
+      }
+
+      @if (!loading && prescriptions.length === 0) {
+        <div class="empty-state">
+          <span>📋</span>
+          <p>No prescriptions uploaded yet</p>
+        </div>
+      }
+
+      @if (!loading && prescriptions.length > 0) {
+        <div class="rx-grid">
+          @for (rx of prescriptions; track rx.id) {
+            <div class="rx-card" [class]="'rx-' + rx.status?.toLowerCase()">
+              <div class="rx-header">
+                <span class="rx-id">#{{ rx.id }}</span>
+                <span class="rx-status" [class]="getStatusClass(rx.status!)">
+                  {{ getStatusIcon(rx.status!) }} {{ rx.status }}
+                </span>
+              </div>
+
+              <div class="rx-image">
+                <img [src]="rx.imageUrl" alt="Prescription" (error)="onImgError($event)" />
+              </div>
+
+              <div class="rx-info">
+                <div class="info-row">
+                  <span>Uploaded</span>
+                  <span>{{ rx.uploadedAt | date:'medium' }}</span>
+                </div>
+                @if (rx.rejectionReason) {
+                  <div class="rejection-reason">
+                    <span>❌ Rejection Reason:</span>
+                    <p>{{ rx.rejectionReason }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.capg.pharma.authservice.service.AuthServiceTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.171 s -- in com.capg.pharma.authservice.service.AuthServiceTest

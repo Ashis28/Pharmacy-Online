@@ -1,0 +1,105 @@
+<div class="medicines-page">
+  @if (loginRequired) {
+    <div class="login-toast">Please <a routerLink="/login">login</a> to add items to your cart</div>
+  }
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Medicine Catalog</h1>
+      <p>Browse our complete range of authentic medicines</p>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" placeholder="Search medicines..." />
+        @if (searchQuery) {
+          <button class="clear-search" (click)="searchQuery=''; loadMedicines()">&#x2715;</button>
+        }
+      </div>
+
+      <div class="filter-group">
+        <select [(ngModel)]="filterRx" (ngModelChange)="applyFilters()">
+          <option value="all">All Types</option>
+          <option value="otc">OTC Only</option>
+          <option value="rx">Rx Required</option>
+        </select>
+        <select [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+          <option value="name">Sort: Name</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+      </div>
+
+      <span class="results-count">{{ filtered.length }} medicines found</span>
+    </div>
+
+    @if (loading) {
+      <div class="loading-grid">
+        @for (i of [1,2,3,4,5,6,8,9]; track i) { <div class="skeleton-card"></div> }
+      </div>
+    }
+
+    @if (!loading) {
+      @if (filtered.length === 0) {
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <h3>No medicines found</h3>
+          <p>Try adjusting your search or filters</p>
+        </div>
+      } @else {
+        <div class="medicines-grid">
+          @for (medicine of filtered; track medicine.id) {
+            <div class="medicine-card" [class.out-of-stock]="medicine.stockQuantity === 0">
+              <div class="card-header">
+                <div class="medicine-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </div>
+                <div class="badges">
+                  @if (medicine.requiresPrescription) {
+                    <span class="badge rx">Rx</span>
+                  } @else {
+                    <span class="badge otc">OTC</span>
+                  }
+                  @if (medicine.stockQuantity === 0) {
+                    <span class="badge out">Out of Stock</span>
+                  } @else if (medicine.stockQuantity <= 10) {
+                    <span class="badge low">Low Stock</span>
+                  }
+                </div>
+              </div>
+
+              <div class="card-body">
+                <h3>{{ medicine.name }}</h3>
+                <p class="description">{{ medicine.description || 'Quality pharmaceutical product' }}</p>
+                <div class="medicine-details">
+                  @if (medicine.expiryDate) {
+                    <span class="detail">Exp: {{ medicine.expiryDate }}</span>
+                  }
+                  @if (medicine.categoryName) {
+                    <span class="detail">{{ medicine.categoryName }}</span>
+                  }
+                  <span class="detail stock-info" [class.low-stock]="medicine.stockQuantity <= 10">
+                    {{ medicine.stockQuantity }} units
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <span class="price">&#8377;{{ medicine.price | number:'1.2-2' }}</span>
+                <button class="btn-cart" [class.added]="addedToCart.has(medicine.id!)"
+                  (click)="addToCart(medicine)" [disabled]="medicine.stockQuantity === 0">
+                  @if (addedToCart.has(medicine.id!)) { Added }
+                  @else if (!auth.isLoggedIn()) { Login to Buy }
+                  @else { Add to Cart }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

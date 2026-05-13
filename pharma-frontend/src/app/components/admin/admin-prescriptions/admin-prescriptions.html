@@ -1,0 +1,69 @@
+<div class="admin-prescriptions">
+  <div class="section-header">
+    <div>
+      <h1>Prescription Review</h1>
+      <p>Review and approve/reject pending prescriptions</p>
+    </div>
+    <button class="btn-refresh" (click)="loadPrescriptions()">Refresh</button>
+  </div>
+
+  @if (success) { <div class="alert alert-success">{{ success }}</div> }
+  @if (error) { <div class="alert alert-error">{{ error }}</div> }
+
+  @if (rejectModal) {
+    <div class="modal-overlay" (click)="rejectModal = null">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h2>Reject Prescription #{{ rejectModal.id }}</h2>
+        <div class="form-group">
+          <label>Rejection Reason *</label>
+          <textarea [(ngModel)]="rejectModal.reason" rows="3"
+            placeholder="e.g. Prescription is expired or illegible"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="rejectModal = null">Cancel</button>
+          <button class="btn-reject-confirm" (click)="submitReject()">Reject</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner-large"></div><p>Loading prescriptions...</p></div>
+  }
+
+  @if (!loading && prescriptions.length === 0) {
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <h2>All caught up!</h2>
+      <p>No pending prescriptions to review</p>
+    </div>
+  }
+
+  @if (!loading && prescriptions.length > 0) {
+    <div class="pending-count">
+      <span class="count-badge">{{ prescriptions.length }}</span> pending prescriptions
+    </div>
+    <div class="rx-grid">
+      @for (rx of prescriptions; track rx.id) {
+        <div class="rx-card">
+          <div class="rx-header">
+            <span class="rx-id">#{{ rx.id }}</span>
+            <span class="rx-status pending">PENDING</span>
+          </div>
+          <div class="rx-image">
+            <img [src]="rx.imageUrl" alt="Prescription" (error)="onImgError($event)" />
+          </div>
+          <div class="rx-info">
+            <div class="info-row"><span>Customer ID</span><span>{{ rx.customerId }}</span></div>
+            <div class="info-row"><span>Email</span><span>{{ rx.customerEmail }}</span></div>
+            <div class="info-row"><span>Uploaded</span><span>{{ rx.uploadedAt | date:'medium' }}</span></div>
+          </div>
+          <div class="rx-actions">
+            <button class="btn-approve" (click)="approve(rx.id!)">Approve</button>
+            <button class="btn-reject" (click)="openReject(rx.id!)">Reject</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

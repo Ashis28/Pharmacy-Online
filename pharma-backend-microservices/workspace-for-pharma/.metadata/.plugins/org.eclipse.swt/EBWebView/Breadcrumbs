@@ -1,0 +1,46 @@
+0:04:07 Microsoft.BrowserList.AddBrowser
+0:04:07 Browser3 Insert active Tab3 at 0
+0:04:07 Tab3 StartNav26 #auto_toplevel
+0:04:07 Tab3 StartNav27 #typed
+0:04:07 Tab3 FinishNav26
+0:04:07 Tab3 PageLoad
+0:04:07 Tab3 FinishNav27
+0:04:07 Tab3 PageLoad
+0:04:08 Tab3 StartNav28 #typed
+0:04:08 Tab3 FinishNav28
+0:04:08 Tab3 PageLoad
+0:04:10 Memory Pressure: Moderate
+0:04:11 Tab3 StartNav29 #typed
+0:04:11 Tab3 FinishNav29
+0:04:11 Tab3 PageLoad
+0:04:13 Tab3 StartNav30 #typed
+0:04:13 Tab3 FinishNav30
+0:04:13 Tab3 PageLoad
+0:04:20 Memory Pressure: Moderate
+0:04:25 Memory Pressure: Critical
+0:04:30 Memory Pressure: Critical
+0:04:35 Memory Pressure: Critical
+0:04:40 Memory Pressure: Moderate
+0:04:50 Memory Pressure: Moderate
+0:05:01 Memory Pressure: Moderate
+0:05:11 Memory Pressure: Moderate
+0:05:21 Memory Pressure: Moderate
+0:05:31 Memory Pressure: Moderate
+0:05:41 Memory Pressure: Moderate
+0:05:51 Memory Pressure: Moderate
+0:06:01 Memory Pressure: Moderate
+0:06:11 Memory Pressure: Moderate
+0:06:21 Memory Pressure: Moderate
+0:06:31 Memory Pressure: Critical
+0:06:36 Memory Pressure: Moderate
+0:06:41 Memory Pressure: Critical
+0:06:46 Memory Pressure: Moderate
+0:06:56 Memory Pressure: Moderate
+0:07:06 Memory Pressure: Moderate
+0:07:16 Memory Pressure: None
+0:07:36 Memory Pressure: Moderate
+0:07:41 Memory Pressure: None
+0:07:46 Memory Pressure: Moderate
+0:07:56 Memory Pressure: Moderate
+0:08:06 Memory Pressure: Moderate
+0:08:08 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp

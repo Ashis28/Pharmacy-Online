@@ -1,0 +1,184 @@
+================================================================================
+  SONARLINT / SONARQUBE GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS SONARLINT?
+------------------
+SonarLint is a static code analysis tool that detects bugs, code smells,
+security vulnerabilities, and maintainability issues in your code as you type.
+It integrates directly into your IDE (Eclipse, IntelliJ, VS Code).
+
+SonarQube is the server-side version for team-wide analysis and reporting.
+SonarLint can connect to SonarQube to use shared quality profiles.
+
+--------------------------------------------------------------------------------
+INSTALLING SONARLINT IN ECLIPSE (your IDE)
+--------------------------------------------------------------------------------
+
+1. Open Eclipse
+2. Go to Help → Eclipse Marketplace
+3. Search for "SonarLint"
+4. Click "Install" on "SonarLint" by SonarSource
+5. Accept the license and restart Eclipse
+
+OR via update site:
+1. Help → Install New Software
+2. Add site: https://binaries.sonarsource.com/SonarLint-for-Eclipse/releases/
+3. Select SonarLint and install
+
+--------------------------------------------------------------------------------
+USING SONARLINT IN ECLIPSE
+--------------------------------------------------------------------------------
+
+After installation:
+  - SonarLint automatically analyzes files as you open/edit them
+  - Issues appear as yellow/red markers in the editor gutter
+  - Open "SonarLint Issues" view: Window → Show View → Other → SonarLint → Issues
+  - Right-click a project → SonarLint → Analyze to run full analysis
+
+Issue severity levels:
+  BLOCKER  - Critical bugs that will cause failures
+  CRITICAL - Serious bugs or security vulnerabilities
+  MAJOR    - Code smells that affect maintainability
+  MINOR    - Minor style issues
+  INFO     - Informational suggestions
+
+--------------------------------------------------------------------------------
+SONAR MAVEN PLUGIN (already added to parent pom.xml)
+--------------------------------------------------------------------------------
+
+The sonar-maven-plugin is configured in the parent pom.xml:
+
+  <plugin>
+      <groupId>org.sonarsource.scanner.maven</groupId>
+      <artifactId>sonar-maven-plugin</artifactId>
+      <version>3.11.0.3922</version>
+  </plugin>
+
+To run SonarQube analysis from command line:
+  mvn sonar:sonar \
+    -Dsonar.projectKey=pharma-microservices \
+    -Dsonar.host.url=http://localhost:9000 \
+    -Dsonar.login=your-sonar-token
+
+--------------------------------------------------------------------------------
+RUNNING SONARQUBE LOCALLY (for team analysis)
+--------------------------------------------------------------------------------
+
+Option 1 - Docker:
+  docker run -d --name sonarqube \
+    -p 9000:9000 \
+    sonarqube:community
+
+Option 2 - Docker Compose (add to docker-compose.yml):
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - pharmacy-net
+
+Access: http://localhost:9000
+Default credentials: admin / admin (change on first login)
+
+--------------------------------------------------------------------------------
+CONNECTING SONARLINT TO SONARQUBE (Eclipse)
+--------------------------------------------------------------------------------
+
+1. In Eclipse: Window → Preferences → SonarLint → SonarQube Connections
+2. Click "Add"
+3. Enter SonarQube URL: http://localhost:9000
+4. Enter your token (generate in SonarQube: My Account → Security → Tokens)
+5. Click "Test Connection" then "Finish"
+6. Right-click project → SonarLint → Bind to SonarQube project
+7. Select your project key
+
+Now SonarLint uses the same quality rules as your SonarQube server.
+
+--------------------------------------------------------------------------------
+COMMON ISSUES SONARLINT WILL FLAG IN THIS PROJECT
+--------------------------------------------------------------------------------
+
+1. Unused imports
+   Fix: Remove unused import statements
+
+2. Raw types (e.g. List instead of List<String>)
+   Fix: Add generic type parameters
+
+3. Empty catch blocks
+   Fix: Log the exception or add a comment explaining why it's intentional
+   Example in JwtAuthFilter:
+     } catch (Exception ignored) {
+         // Invalid token — security context remains empty
+     }
+
+4. Magic numbers
+   Fix: Extract to named constants
+   Example: 10 in "stockQuantity <= 10" → LOW_STOCK_THRESHOLD = 10
+
+5. String concatenation in loops
+   Fix: Use StringBuilder
+
+6. Potential null pointer dereferences
+   Fix: Add null checks or use Optional
+
+7. Method too long (>30 lines)
+   Fix: Extract helper methods
+
+8. Cognitive complexity too high
+   Fix: Simplify nested conditions, extract methods
+
+--------------------------------------------------------------------------------
+SONAR QUALITY GATE
+--------------------------------------------------------------------------------
+
+A Quality Gate is a set of conditions that must pass for code to be considered
+"production ready". Default conditions:
+
+  - Coverage >= 80% (requires JaCoCo)
+  - Duplicated Lines < 3%
+  - Maintainability Rating = A
+  - Reliability Rating = A
+  - Security Rating = A
+  - No new BLOCKER or CRITICAL issues
+
+To add JaCoCo coverage reporting, add to each service pom.xml:
+
+  <plugin>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>0.8.11</version>
+      <executions>
+          <execution>
+              <goals>
+                  <goal>prepare-agent</goal>
+              </goals>
+          </execution>
+          <execution>
+              <id>report</id>
+              <phase>test</phase>
+              <goals>
+                  <goal>report</goal>
+              </goals>
+          </execution>
+      </executions>
+  </plugin>
+
+Then run: mvn clean verify sonar:sonar
+
+--------------------------------------------------------------------------------
+SUPPRESSING FALSE POSITIVES
+--------------------------------------------------------------------------------
+
+If SonarLint flags something that is intentional, suppress it:
+
+  @SuppressWarnings("java:S1135")  // Suppress "TODO" comment warning
+  public void someMethod() { ... }
+
+Or add a comment:
+  // NOSONAR - intentional suppression with reason
+
+Use suppressions sparingly — they hide real issues if overused.
+
+================================================================================

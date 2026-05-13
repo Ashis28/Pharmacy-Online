@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: notification-service
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
+
+  # ── SMTP / Email ──────────────────────────────────────────────────────────
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:codesinfinite328@gmail.com}
+    password: ${MAIL_PASSWORD:regs ntwq qvxb mqnh}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # Email feature flag — set to false to keep log-only mode
+notification:
+  email:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:sagarpakar777@gmail.com}
+
+server:
+  port: 9096
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+# Zipkin distributed tracing
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
+# Swagger / SpringDoc
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

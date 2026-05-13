@@ -1,0 +1,12 @@
+# Centralized config for catalog-service
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/catalog_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASS:Tapan282@}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: ${JWT_SECRET:pharmacy_super_secret_key_for_hs256_min_32chars}

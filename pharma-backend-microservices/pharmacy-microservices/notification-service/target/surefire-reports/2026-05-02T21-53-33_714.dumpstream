@@ -1,0 +1,5 @@
+# Created at 2026-05-02T21:53:34.293
+Boot Manifest-JAR contains absolute paths in classpath 'D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\notification-service\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

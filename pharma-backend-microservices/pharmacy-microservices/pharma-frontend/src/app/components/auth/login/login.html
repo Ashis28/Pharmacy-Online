@@ -1,0 +1,71 @@
+<div class="auth-page">
+  <div class="auth-bg">
+    <div class="bg-circle c1"></div>
+    <div class="bg-circle c2"></div>
+    <div class="bg-circle c3"></div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">💊</div>
+      <h1>Welcome Back</h1>
+      <p>Sign in to your PharmaOnline account</p>
+    </div>
+
+    @if (error) {
+      <div class="alert alert-error">
+        <span>⚠️</span> {{ error }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <span class="input-icon">✉️</span>
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-pw" (click)="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner"></span> Signing in...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a routerLink="/register">Create one</a></p>
+      <p>Want admin access? <a routerLink="/register-admin">Register as Admin</a></p>
+    </div>
+  </div>
+</div>

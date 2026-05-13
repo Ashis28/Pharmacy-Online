@@ -1,0 +1,138 @@
+@use '../auth-shared' as *;
+
+.admin-badge {
+  background: linear-gradient(135deg, rgba(233,69,96,0.15), rgba(15,52,96,0.15));
+  border: 1px solid rgba(233,69,96,0.3);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #e94560;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.role-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+
+  .role-tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(46,213,115,0.2);
+    color: #2ed573;
+    border: 1px solid rgba(46,213,115,0.3);
+
+    &.admin {
+      background: rgba(233,69,96,0.2);
+      color: #e94560;
+      border-color: rgba(233,69,96,0.3);
+    }
+  }
+
+  .role-info {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+  }
+}
+
+/* ── Password Strength ── */
+.pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.pw-strength-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.pw-strength-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.35s ease, background 0.35s ease;
+}
+
+.pw-strength-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: right;
+  transition: color 0.35s ease;
+}
+
+.pw-tips {
+  list-style: none;
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  li {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    padding-left: 1rem;
+    position: relative;
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+/* ── Admin Token Field ── */
+.token-required {
+  color: #e94560;
+  font-size: 0.8rem;
+}
+
+.token-check {
+  position: absolute;
+  right: 0.875rem;
+  color: #2ed573;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.input-wrapper input.token-valid {
+  border-color: #2ed573 !important;
+  background: rgba(46, 213, 115, 0.06) !important;
+}
+
+.input-wrapper input.token-invalid {
+  border-color: #e94560 !important;
+}
+
+.token-hint {
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+  padding-left: 0.25rem;
+
+  &.valid  { color: #2ed573; }
+  &.invalid { color: #e94560; }
+}
+
+.token-info {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 0.4rem;
+  padding-left: 0.25rem;
+}

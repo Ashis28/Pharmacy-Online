@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+notification-service,com.capg.pharma.notificationservice.listener,NotificationListener,0,40,0,0,0,11,0,3,0,3
+notification-service,com.capg.pharma.notificationservice.exception,GlobalExceptionHandler,47,0,0,0,9,0,4,0,4,0
+notification-service,com.capg.pharma.notificationservice.controller,NotificationController,19,0,0,0,6,0,3,0,3,0
+notification-service,com.capg.pharma.notificationservice.service,EmailService,0,78,0,2,0,18,0,4,0,3

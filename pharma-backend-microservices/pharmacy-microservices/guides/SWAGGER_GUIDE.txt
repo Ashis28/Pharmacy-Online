@@ -1,0 +1,166 @@
+================================================================================
+  SWAGGER / OPENAPI GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS SWAGGER?
+----------------
+Swagger (OpenAPI 3) provides interactive API documentation for your REST APIs.
+It auto-generates a UI where you can:
+  - Browse all endpoints with their request/response schemas
+  - Test endpoints directly from the browser
+  - Authenticate with JWT tokens
+  - Export the OpenAPI spec for client generation
+
+================================================================================
+AGGREGATED SWAGGER UI (USE THIS)
+================================================================================
+
+All services are accessible through a SINGLE Swagger UI hosted on the gateway:
+
+  http://localhost:8888/swagger-ui.html
+
+This is the recommended way to use Swagger. All API calls made from this UI
+go through the gateway on port 8888 — just like a real client would.
+
+Use the dropdown in the top-right corner to switch between services:
+  - Auth Service
+  - Catalog Service
+  - Order Service
+  - Admin Service
+  - Payment Service
+  - Notification Service
+
+--------------------------------------------------------------------------------
+HOW TO AUTHENTICATE IN THE AGGREGATED SWAGGER UI
+--------------------------------------------------------------------------------
+
+1. Open http://localhost:8888/swagger-ui.html
+2. Select "Auth Service" from the dropdown (top-right)
+3. Call POST /api/auth/login with your credentials
+4. Copy the "token" value from the response
+5. Click the "Authorize" button (lock icon, top-right of the page)
+6. In the "Bearer Authentication" field enter: Bearer <your-token>
+   Example: Bearer eyJhbGciOiJIUzI1NiJ9...
+7. Click "Authorize" then "Close"
+8. Now switch to any other service in the dropdown — the token is applied globally
+9. All requests will be routed through the gateway with your JWT
+
+--------------------------------------------------------------------------------
+HOW THE AGGREGATION WORKS
+--------------------------------------------------------------------------------
+
+The gateway exposes proxy routes for each service's OpenAPI spec:
+
+  /docs/auth-service/v3/api-docs        -> auth-service:9091/v3/api-docs
+  /docs/catalog-service/v3/api-docs     -> catalog-service:9092/v3/api-docs
+  /docs/order-service/v3/api-docs       -> order-service:9093/v3/api-docs
+  /docs/admin-service/v3/api-docs       -> admin-service:9094/v3/api-docs
+  /docs/payment-service/v3/api-docs     -> payment-service:9095/v3/api-docs
+  /docs/notification-service/v3/api-docs -> notification-service:9096/v3/api-docs
+
+These /docs/** routes bypass JWT validation (they are open paths in JwtAuthFilter).
+
+Each service's OpenAPI spec declares the gateway (http://localhost:8888) as its
+server URL, so every "Try it out" request in Swagger UI hits the gateway.
+
+================================================================================
+INDIVIDUAL SERVICE SWAGGER UIs (STILL AVAILABLE)
+================================================================================
+
+Each service still has its own Swagger UI if you need to access it directly:
+
+Service               Swagger UI URL
+--------------------  ----------------------------------------
+auth-service          http://localhost:9091/swagger-ui.html
+catalog-service       http://localhost:9092/swagger-ui.html
+order-service         http://localhost:9093/swagger-ui.html
+admin-service         http://localhost:9094/swagger-ui.html
+payment-service       http://localhost:9095/swagger-ui.html
+notification-service  http://localhost:9096/swagger-ui.html
+
+Note: These individual UIs also route requests through the gateway (port 8888)
+because each service's application.yml declares the gateway as the server URL.
+
+OpenAPI JSON spec per service:
+  http://localhost:{port}/v3/api-docs
+
+================================================================================
+DEPENDENCY SETUP
+================================================================================
+
+Each service (WebMVC) uses:
+  <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.5.0</version>
+  </dependency>
+
+Gateway service (WebFlux) uses:
+  <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+      <version>2.5.0</version>
+  </dependency>
+
+================================================================================
+SWAGGER ANNOTATIONS USED IN THIS PROJECT
+================================================================================
+
+Class level:
+  @Tag(name = "Medicines", description = "Medicine catalog management")
+
+Method level:
+  @Operation(summary = "Get all medicines")
+  @Operation(summary = "Add a new medicine (Admin)")
+
+To add more detail:
+  @Operation(
+      summary = "Place a new order",
+      description = "Creates an order, fetches medicine prices from catalog, " +
+                    "and publishes an ORDER_PLACED event to RabbitMQ."
+  )
+
+To document response codes:
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Order created"),
+      @ApiResponse(responseCode = "400", description = "Invalid request"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized")
+  })
+
+================================================================================
+SWAGGER CONFIG CLASS (per service)
+================================================================================
+
+Each service has a SwaggerConfig.java in the config package:
+
+  @Configuration
+  public class SwaggerConfig {
+      @Bean
+      public OpenAPI serviceOpenAPI() {
+          return new OpenAPI()
+              .info(new Info().title("Service Name API").version("1.0.0"))
+              .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+              .components(new Components()
+                  .addSecuritySchemes("Bearer Authentication",
+                      new SecurityScheme()
+                          .type(SecurityScheme.Type.HTTP)
+                          .scheme("bearer")
+                          .bearerFormat("JWT")));
+      }
+  }
+
+The gateway has its own SwaggerConfig that configures the aggregated UI.
+
+================================================================================
+DISABLING SWAGGER IN PRODUCTION
+================================================================================
+
+Add to application.yml for production profile:
+
+  springdoc:
+    api-docs:
+      enabled: false
+    swagger-ui:
+      enabled: false
+
+================================================================================

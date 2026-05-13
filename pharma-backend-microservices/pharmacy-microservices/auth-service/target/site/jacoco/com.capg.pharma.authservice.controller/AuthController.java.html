@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">auth-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.authservice.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package com.capg.pharma.authservice.controller;
+
+import com.capg.pharma.authservice.dto.LoginRequest;
+import com.capg.pharma.authservice.dto.LoginResponse;
+import com.capg.pharma.authservice.dto.SignupRequest;
+import com.capg.pharma.authservice.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * REST controller for user authentication endpoints.
+ *
+ * &lt;p&gt;Exposes public endpoints for user registration and login.
+ * No JWT token is required to call these endpoints.&lt;/p&gt;
+ *
+ * &lt;p&gt;Base path: {@code /api/auth}&lt;/p&gt;
+ */
+@RestController
+@RequestMapping(&quot;/api/auth&quot;)
+@Tag(name = &quot;Authentication&quot;, description = &quot;User registration and login endpoints&quot;)
+public class AuthController {
+
+    private final AuthService authService;
+
+    /**
+     * Constructs the AuthController with the authentication service.
+     *
+     * @param authService the service handling signup and login logic
+     */
+<span class="fc" id="L34">    public AuthController(AuthService authService) {</span>
+<span class="fc" id="L35">        this.authService = authService;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Registers a new user account.
+     *
+     * &lt;p&gt;Validates the request body, checks for duplicate emails, and persists
+     * the user with a BCrypt-hashed password. Defaults to CUSTOMER role if none specified.&lt;/p&gt;
+     *
+     * @param req the signup request with name, email, password, and optional roles
+     * @return {@code 201 Created} with a success message
+     */
+    @PostMapping(&quot;/signup&quot;)
+    @Operation(summary = &quot;Register a new user&quot;, description = &quot;Creates a new user account. Defaults to CUSTOMER role.&quot;)
+    public ResponseEntity&lt;String&gt; signup(@Valid @RequestBody SignupRequest req) {
+<span class="fc" id="L50">        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(req));</span>
+    }
+
+    /**
+     * Authenticates a user and returns a JWT token.
+     *
+     * &lt;p&gt;Verifies the email and password, then issues a signed JWT valid for 24 hours.
+     * Include the token in subsequent requests as {@code Authorization: Bearer &lt;token&gt;}.&lt;/p&gt;
+     *
+     * @param req the login request with email and password
+     * @return {@code 200 OK} with a {@link LoginResponse} containing the JWT token
+     */
+    @PostMapping(&quot;/login&quot;)
+    @Operation(summary = &quot;Login and get JWT token&quot;, description = &quot;Authenticates credentials and returns a signed JWT.&quot;)
+    public ResponseEntity&lt;LoginResponse&gt; login(@Valid @RequestBody LoginRequest req) {
+<span class="fc" id="L65">        return ResponseEntity.ok(authService.login(req));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

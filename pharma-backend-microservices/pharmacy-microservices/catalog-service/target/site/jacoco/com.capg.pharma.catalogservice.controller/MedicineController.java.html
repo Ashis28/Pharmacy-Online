@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MedicineController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">catalog-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.catalogservice.controller</a> &gt; <span class="el_source">MedicineController.java</span></div><h1>MedicineController.java</h1><pre class="source lang-java linenums">package com.capg.pharma.catalogservice.controller;
+
+import com.capg.pharma.catalogservice.dto.MedicineRequest;
+import com.capg.pharma.catalogservice.dto.MedicineResponse;
+import com.capg.pharma.catalogservice.service.MedicineService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * REST controller for medicine catalog endpoints.
+ *
+ * &lt;p&gt;Read operations (GET) are publicly accessible.
+ * Write operations (POST, PUT, DELETE) require ADMIN role.&lt;/p&gt;
+ *
+ * &lt;p&gt;Base path: {@code /api/catalog/medicines}&lt;/p&gt;
+ */
+@RestController
+@RequestMapping(&quot;/api/catalog/medicines&quot;)
+@Tag(name = &quot;Medicines&quot;, description = &quot;Medicine catalog management&quot;)
+public class MedicineController {
+
+    private final MedicineService medicineService;
+
+    /**
+     * Constructs the controller with the medicine service.
+     *
+     * @param medicineService the service handling medicine business logic
+     */
+<span class="fc" id="L36">    public MedicineController(MedicineService medicineService) {</span>
+<span class="fc" id="L37">        this.medicineService = medicineService;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Returns all medicines in the catalog.
+     *
+     * @return {@code 200 OK} with list of all medicines
+     */
+    @GetMapping
+    @Operation(summary = &quot;Get all medicines&quot;)
+    public ResponseEntity&lt;List&lt;MedicineResponse&gt;&gt; getAll() {
+<span class="fc" id="L48">        return ResponseEntity.ok(medicineService.getAll());</span>
+    }
+
+    /**
+     * Returns a single medicine by its ID.
+     *
+     * @param id the medicine's primary key
+     * @return {@code 200 OK} with the medicine, or {@code 404} if not found
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get medicine by ID&quot;)
+    public ResponseEntity&lt;MedicineResponse&gt; getById(@PathVariable(&quot;id&quot;) Long id) {
+<span class="fc" id="L60">        return ResponseEntity.ok(medicineService.getById(id));</span>
+    }
+
+    /**
+     * Searches medicines by name (case-insensitive partial match).
+     *
+     * @param name the search term
+     * @return {@code 200 OK} with matching medicines
+     */
+    @GetMapping(&quot;/search&quot;)
+    @Operation(summary = &quot;Search medicines by name&quot;)
+    public ResponseEntity&lt;List&lt;MedicineResponse&gt;&gt; search(@RequestParam String name) {
+<span class="fc" id="L72">        return ResponseEntity.ok(medicineService.search(name));</span>
+    }
+
+    /**
+     * Returns the count of medicines with low stock (≤10 units).
+     * No auth required — count is non-sensitive and needed by the admin dashboard.
+     *
+     * @return {@code 200 OK} with the count
+     */
+    @GetMapping(&quot;/low-stock-count&quot;)
+    @Operation(summary = &quot;Get low stock medicine count&quot;)
+    public ResponseEntity&lt;Long&gt; getLowStockCount() {
+<span class="fc" id="L84">        return ResponseEntity.ok(medicineService.getLowStockCount());</span>
+    }
+
+    /**
+     * Creates a new medicine in the catalog. Admin only.
+     *
+     * @param req the medicine creation request
+     * @return {@code 201 Created} with the created medicine
+     */
+    @PostMapping
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Add a new medicine (Admin)&quot;)
+    public ResponseEntity&lt;MedicineResponse&gt; create(@Valid @RequestBody MedicineRequest req) {
+<span class="fc" id="L97">        return ResponseEntity.status(HttpStatus.CREATED).body(medicineService.create(req));</span>
+    }
+
+    /**
+     * Updates an existing medicine. Admin only.
+     *
+     * @param id  the medicine's primary key
+     * @param req the update request
+     * @return {@code 200 OK} with the updated medicine
+     */
+    @PutMapping(&quot;/{id}&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Update a medicine (Admin)&quot;)
+    public ResponseEntity&lt;MedicineResponse&gt; update(@PathVariable Long id,
+                                                    @Valid @RequestBody MedicineRequest req) {
+<span class="fc" id="L112">        return ResponseEntity.ok(medicineService.update(id, req));</span>
+    }
+
+    /**
+     * Decrements stock for a medicine after an order is placed. Internal use only.
+     *
+     * @param id       the medicine's primary key
+     * @param quantity the quantity to deduct (passed as request param)
+     * @return {@code 200 OK} with the updated medicine
+     */
+    @PatchMapping(&quot;/{id}/stock&quot;)
+    @Operation(summary = &quot;Decrement stock after order (internal)&quot;)
+    public ResponseEntity&lt;MedicineResponse&gt; decrementStock(
+            @PathVariable(&quot;id&quot;) Long id,
+            @RequestParam int quantity) {
+<span class="nc" id="L127">        medicineService.decrementStock(id, quantity);</span>
+<span class="nc" id="L128">        return ResponseEntity.ok(medicineService.getById(id));</span>
+    }
+
+    /**
+     * Deletes a medicine from the catalog. Admin only.
+     *
+     * @param id the medicine's primary key
+     * @return {@code 204 No Content}
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Delete a medicine (Admin)&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable(&quot;id&quot;) Long id) {
+<span class="fc" id="L141">        medicineService.delete(id);</span>
+<span class="fc" id="L142">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

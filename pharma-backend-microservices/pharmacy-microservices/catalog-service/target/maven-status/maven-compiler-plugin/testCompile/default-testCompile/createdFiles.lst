@@ -1,0 +1,7 @@
+com\capg\pharma\catalogservice\service\PrescriptionServiceTest.class
+com\capg\pharma\catalogservice\controller\PrescriptionControllerTest.class
+com\capg\pharma\catalogservice\service\MedicineServiceStockTest.class
+com\capg\pharma\catalogservice\exception\GlobalExceptionHandlerTest.class
+com\capg\pharma\catalogservice\controller\MedicineControllerTest.class
+com\capg\pharma\catalogservice\config\TestSecurityConfig.class
+com\capg\pharma\catalogservice\service\MedicineServiceTest.class

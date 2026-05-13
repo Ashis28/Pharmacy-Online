@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificationListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">notification-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.notificationservice.listener</a> &gt; <span class="el_source">NotificationListener.java</span></div><h1>NotificationListener.java</h1><pre class="source lang-java linenums">package com.capg.pharma.notificationservice.listener;
+
+import com.capg.pharma.notificationservice.config.RabbitMQConfig;
+import com.capg.pharma.notificationservice.dto.NotificationRequest;
+import com.capg.pharma.notificationservice.service.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+/**
+ * RabbitMQ message listener for notification events.
+ *
+ * &lt;p&gt;Consumes messages from the {@code notification.queue} and sends
+ * transactional emails via {@link EmailService}. When email is disabled
+ * (default for local dev), the email content is logged instead.&lt;/p&gt;
+ */
+@Component
+public class NotificationListener {
+
+<span class="fc" id="L21">    private static final Logger log = LoggerFactory.getLogger(NotificationListener.class);</span>
+
+    private final EmailService emailService;
+
+    /**
+     * Constructs the listener with the email service.
+     *
+     * @param emailService service responsible for SMTP delivery
+     */
+<span class="fc" id="L30">    public NotificationListener(EmailService emailService) {</span>
+<span class="fc" id="L31">        this.emailService = emailService;</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Handles incoming notification events from RabbitMQ.
+     *
+     * &lt;p&gt;Triggered automatically when a message arrives on {@code notification.queue}.
+     * The message is deserialized from JSON to {@link NotificationRequest} by
+     * the configured {@link com.capg.pharma.notificationservice.config.RabbitMQConfig#messageConverter()}.&lt;/p&gt;
+     *
+     * @param request the deserialized notification event
+     */
+    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+    public void handleNotification(NotificationRequest request) {
+<span class="fc" id="L45">        log.info(&quot;[NOTIFICATION] type={} to={} subject={}&quot;,</span>
+<span class="fc" id="L46">                request.getType(), request.getRecipientEmail(), request.getSubject());</span>
+
+<span class="fc" id="L48">        emailService.sendEmail(</span>
+<span class="fc" id="L49">                request.getRecipientEmail(),</span>
+<span class="fc" id="L50">                request.getSubject(),</span>
+<span class="fc" id="L51">                request.getMessage()</span>
+        );
+<span class="fc" id="L53">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

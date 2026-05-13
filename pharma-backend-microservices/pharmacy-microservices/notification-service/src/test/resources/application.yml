@@ -1,0 +1,30 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+  rabbitmq:
+    host: localhost
+    port: 5672
+  mail:
+    host: localhost
+    port: 25
+    username: test@example.com
+    password: test
+
+notification:
+  email:
+    enabled: false
+    from: test@example.com
+
+server:
+  port: 0
+
+eureka:
+  client:
+    enabled: false
+
+management:
+  tracing:
+    sampling:
+      probability: 0.0

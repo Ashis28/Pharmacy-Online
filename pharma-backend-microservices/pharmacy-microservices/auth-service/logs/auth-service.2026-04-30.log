@@ -1,0 +1,230 @@
+2026-04-30 14:52:18.786 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 20712 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 14:52:18.796 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 14:52:24.309 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 3270b2c7-2f52-48dc-8934-c0bb989ae834
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 14:52:27.433 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.75 seconds (process running for 15.304)
+2026-04-30 14:57:35.441 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 10384 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 14:57:35.450 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 14:57:40.545 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: d8d43644-95b6-416f-b9aa-69df613e6834
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 14:57:43.652 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.867 seconds (process running for 15.332)
+2026-04-30 15:00:18.214 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 45980 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:00:18.219 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:00:24.870 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 4c94437c-636d-46f7-82c6-5290f509b8aa
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:00:25.637 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.161 seconds (process running for 14.471)
+2026-04-30 15:03:39.262 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 38036 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:03:39.265 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:03:45.928 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 69427777-b2e9-4e46-a73c-2981bd05bd76
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:03:46.851 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 9.294 seconds (process running for 13.595)
+2026-04-30 15:11:06.717 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 19148 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:11:06.724 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:11:14.656 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 6160b4b1-147b-4024-a081-f8c719a970ec
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:11:15.398 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.998 seconds (process running for 14.006)
+2026-04-30 15:24:56.025 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 26440 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:24:56.042 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:25:03.498 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: ff5e235a-b567-47b5-bd5e-95fb72d0d5f7
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:25:04.333 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.198 seconds (process running for 13.553)
+2026-04-30 15:36:39.939 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 42588 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:36:39.946 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:36:46.689 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 64838344-884a-48eb-a8e1-f78b4e98de95
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:36:47.475 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.251 seconds (process running for 13.991)
+2026-04-30 15:40:27.423 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 26308 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:40:27.427 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:40:34.469 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: b867db2b-31be-4cd1-a17f-7f92d4252fb2
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:40:35.240 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 10.203 seconds (process running for 14.7)
+2026-04-30 15:41:48.494 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 22256 (started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 15:41:48.498 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 15:41:55.634 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: ed3d865f-ac76-4318-b233-f137f652fb28
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 15:41:56.536 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 9.61 seconds (process running for 13.982)
+2026-04-30 16:53:03.904 [main] INFO  c.c.p.a.AuthServiceApplication - Starting AuthServiceApplication using Java 17.0.12 with PID 24340 (C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service\target\classes started by kammi in C:\Users\kammi\OneDrive\Desktop\CapGemini Training\pp2\pharmacy-microservices\auth-service)
+2026-04-30 16:53:03.908 [main] INFO  c.c.p.a.AuthServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2026-04-30 16:53:06.912 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-04-30 16:53:06.916 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-04-30 16:53:07.241 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9091"]
+2026-04-30 16:53:07.242 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-30 16:53:07.243 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-30 16:53:07.343 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-30 16:53:08.723 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-04-30 16:53:09.140 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e7563f6
+2026-04-30 16:53:09.142 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-04-30 16:53:09.291 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-30 16:53:11.600 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-30 16:53:11.661 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: f1b4c9d7-c454-4943-8915-9b79c50bd105
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30 16:53:13.961 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-30 16:53:14.491 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-9091"]
+2026-04-30 16:53:14.872 [main] INFO  c.c.p.a.AuthServiceApplication - Started AuthServiceApplication in 12.694 seconds (process running for 13.522)
+2026-04-30 16:53:15.410 [RMI TCP Connection(8)-127.0.0.1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-30 17:53:19.119 [DiscoveryClient-HeartbeatExecutor-0] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: I/O error on PUT request for "http://localhost:8761/eureka/apps/AUTH-SERVICE/Jahnavi:auth-service:9091": Connect to http://localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: no further information
+2026-04-30 17:53:19.159 [DiscoveryClient-CacheRefreshExecutor-0] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: I/O error on GET request for "http://localhost:8761/eureka/apps/delta": Connect to http://localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: no further information
+2026-04-30 17:53:19.196 [DiscoveryClient-HeartbeatExecutor-0] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: I/O error on PUT request for "http://localhost:8761/eureka/apps/AUTH-SERVICE/Jahnavi:auth-service:9091": Connect to http://localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: no further information
+2026-04-30 17:53:19.219 [DiscoveryClient-CacheRefreshExecutor-0] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: I/O error on GET request for "http://localhost:8761/eureka/apps/delta": Connect to http://localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: no further information
+2026-04-30 17:53:19.197 [DiscoveryClient-HeartbeatExecutor-0] ERROR c.netflix.discovery.DiscoveryClient - DiscoveryClient_AUTH-SERVICE/Jahnavi:auth-service:9091 - was unable to send heartbeat!
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.sendHeartBeat(EurekaHttpClientDecorator.java:89)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$3.execute(EurekaHttpClientDecorator.java:92)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.sendHeartBeat(EurekaHttpClientDecorator.java:89)
+	at com.netflix.discovery.DiscoveryClient.renew(DiscoveryClient.java:837)
+	at com.netflix.discovery.DiscoveryClient$HeartbeatThread.run(DiscoveryClient.java:1401)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-30 17:53:24.384 [DiscoveryClient-InstanceInfoReplicator-0] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: I/O error on POST request for "http://localhost:8761/eureka/apps/AUTH-SERVICE": Connect to http://localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: no further information
+2026-04-30 17:53:24.386 [DiscoveryClient-InstanceInfoReplicator-0] WARN  c.netflix.discovery.DiscoveryClient - DiscoveryClient_AUTH-SERVICE/Jahnavi:auth-service:9091 - registration failed Cannot execute request on any known server
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:820)
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121)
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-30 17:53:24.388 [DiscoveryClient-InstanceInfoReplicator-0] WARN  c.n.discovery.InstanceInfoReplicator - There was a problem with the instance info replicator
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:820)
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121)
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-30 17:53:24.658 [RMI TCP Connection(70)-127.0.0.1] INFO  o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-9091"]
+2026-04-30 17:53:25.005 [RMI TCP Connection(70)-127.0.0.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-04-30 17:53:25.024 [RMI TCP Connection(70)-127.0.0.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-04-30 17:53:29.109 [RMI TCP Connection(70)-127.0.0.1] WARN  c.n.d.s.t.d.RetryableEurekaHttpClient - Request execution failed with message: Connection pool shut down
+2026-04-30 17:53:29.112 [RMI TCP Connection(70)-127.0.0.1] ERROR c.netflix.discovery.DiscoveryClient - DiscoveryClient_AUTH-SERVICE/Jahnavi:auth-service:9091 - de-registration failedCannot execute request on any known server
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71)
+	at com.netflix.discovery.DiscoveryClient.unregister(DiscoveryClient.java:916)
+	at com.netflix.discovery.DiscoveryClient.shutdown(DiscoveryClient.java:892)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeDestroyMethods(InitDestroyAnnotationBeanPostProcessor.java:415)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeDestruction(InitDestroyAnnotationBeanPostProcessor.java:239)
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:202)
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.run(DisposableBeanAdapter.java:195)
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.destroy(GenericScope.java:389)
+	at org.springframework.cloud.context.scope.GenericScope.destroy(GenericScope.java:136)
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:211)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:587)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:559)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:1202)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:520)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:1195)
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1186)
+	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1147)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.doClose(ServletWebServerApplicationContext.java:174)
+	at org.springframework.context.support.AbstractApplicationContext.close(AbstractApplicationContext.java:1093)
+	at org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin.shutdown(SpringApplicationAdminMXBeanRegistrar.java:160)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at sun.reflect.misc.Trampoline.invoke(MethodUtil.java:72)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/sun.reflect.misc.MethodUtil.invoke(MethodUtil.java:262)
+	at java.management/com.sun.jmx.mbeanserver.ConvertingMethod.invokeWithOpenReturn(ConvertingMethod.java:193)
+	at java.management/com.sun.jmx.mbeanserver.ConvertingMethod.invokeWithOpenReturn(ConvertingMethod.java:175)
+	at java.management/com.sun.jmx.mbeanserver.MXBeanIntrospector.invokeM2(MXBeanIntrospector.java:117)
+	at java.management/com.sun.jmx.mbeanserver.MXBeanIntrospector.invokeM2(MXBeanIntrospector.java:54)
+	at java.management/com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:237)
+	at java.management/com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:138)
+	at java.management/com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:252)
+	at java.management/com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:814)
+	at java.management/com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:802)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doOperation(RMIConnectionImpl.java:1472)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl$PrivilegedOperation.run(RMIConnectionImpl.java:1310)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doPrivilegedOperation(RMIConnectionImpl.java:1405)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.invoke(RMIConnectionImpl.java:829)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)

@@ -1,0 +1,236 @@
+================================================================================
+  JACOCO CODE COVERAGE GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS JACOCO?
+---------------
+JaCoCo (Java Code Coverage) measures how much of your source code is executed
+when your tests run. It tells you which lines, methods, and branches are covered
+by tests and which are not.
+
+Coverage types:
+  - Instruction Coverage : % of bytecode instructions executed
+  - Branch Coverage      : % of if/else/switch branches taken
+  - Line Coverage        : % of source lines executed
+  - Method Coverage      : % of methods called
+  - Class Coverage       : % of classes instantiated
+
+================================================================================
+HOW TO GENERATE REPORTS
+================================================================================
+
+Run tests + generate Jacoco reports for ALL services:
+  mvn clean test
+
+Run tests + generate for a SINGLE service:
+  mvn clean test -pl auth-service
+  mvn clean test -pl catalog-service
+  mvn clean test -pl order-service
+  mvn clean test -pl admin-service
+  mvn clean test -pl payment-service
+  mvn clean test -pl notification-service
+
+After running, look for this in the output:
+  [INFO] --- jacoco:0.8.11:report (report) @ auth-service ---
+  [INFO] Analyzed bundle 'auth-service' with 16 classes
+
+That confirms the report was generated.
+
+================================================================================
+WHERE TO FIND THE REPORTS
+================================================================================
+
+Each service generates its own HTML report:
+
+  auth-service\target\site\jacoco\index.html
+  catalog-service\target\site\jacoco\index.html
+  order-service\target\site\jacoco\index.html
+  admin-service\target\site\jacoco\index.html
+  payment-service\target\site\jacoco\index.html
+  notification-service\target\site\jacoco\index.html
+
+HOW TO OPEN:
+  1. Open Windows Explorer
+  2. Navigate to the path above
+  3. Right-click index.html → Open with → Chrome (or any browser)
+
+================================================================================
+HOW TO READ THE REPORT
+================================================================================
+
+The main page shows a table with all packages:
+
+  Element                              | Missed Instr | Cov | Missed Branch | Cov
+  -------------------------------------|--------------|-----|---------------|----
+  com.capg.pharma.authservice.service  | 2 of 45      | 91% | 1 of 8        | 87%
+  com.capg.pharma.authservice.controller| 0 of 12     |100% | 0 of 4        |100%
+
+Click on any package to drill down to individual classes.
+Click on a class to see line-by-line coverage.
+
+COLOR CODING on source code view:
+  GREEN  = line is fully covered by tests
+  YELLOW = line is partially covered (some branches not taken)
+  RED    = line is NOT covered by any test
+  No color = not executable (comments, declarations)
+
+DIAMOND ICONS on branch coverage:
+  Green diamond  = all branches covered
+  Yellow diamond = some branches covered
+  Red diamond    = no branches covered
+
+================================================================================
+CURRENT COVERAGE SUMMARY (after mvn clean test)
+================================================================================
+
+Service               Classes   Coverage (approx)
+--------------------  --------  -----------------
+auth-service          16        ~53%
+catalog-service       ~20       check report
+order-service         ~23       check report
+admin-service         ~17       check report
+payment-service       ~13       check report
+notification-service  ~8        check report
+
+Note: 100% coverage is the requirement. Current coverage is lower because
+not all classes have dedicated tests. The security, config, and entity
+classes are the main uncovered areas.
+
+================================================================================
+WHAT IS COVERED vs NOT COVERED
+================================================================================
+
+WELL COVERED (green):
+  - Service classes (AuthService, OrderService, etc.) — unit tested with Mockito
+  - Controller classes — tested with @WebMvcTest
+  - Exception classes — tested via service tests
+  - DTO classes — used in all tests
+
+NOT COVERED (red):
+  - SecurityConfig — Spring Security config, hard to unit test
+  - JwtAuthFilter — filter chain, needs integration test
+  - Entity classes — JPA entities, getters/setters not tested
+  - Config classes (SwaggerConfig, RabbitMQConfig) — Spring beans
+  - Application main classes — SpringApplication.run()
+
+================================================================================
+HOW JACOCO IS CONFIGURED IN THIS PROJECT
+================================================================================
+
+Each service pom.xml has:
+
+  <plugin>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>0.8.11</version>
+      <executions>
+          <execution>
+              <id>prepare-agent</id>
+              <goals><goal>prepare-agent</goal></goals>
+          </execution>
+          <execution>
+              <id>report</id>
+              <phase>test</phase>
+              <goals><goal>report</goal></goals>
+          </execution>
+      </executions>
+  </plugin>
+
+prepare-agent : Sets up the JaCoCo Java agent before tests run.
+                Instruments bytecode to track which lines are executed.
+                Creates target/jacoco.exec (raw coverage data).
+
+report        : Runs after tests complete.
+                Reads target/jacoco.exec and generates HTML/XML/CSV reports.
+                Output goes to target/site/jacoco/
+
+================================================================================
+FILES GENERATED BY JACOCO
+================================================================================
+
+After mvn clean test, each service's target/ folder contains:
+
+  target/
+    jacoco.exec                  ← raw binary coverage data
+    site/
+      jacoco/
+        index.html               ← main report (open this)
+        jacoco.xml               ← XML report (for SonarQube/CI)
+        jacoco.csv               ← CSV report
+        com.capg.pharma.*/       ← per-package HTML pages
+          ClassName.html         ← per-class coverage with source
+
+================================================================================
+RUNNING IN ECLIPSE (alternative to terminal)
+================================================================================
+
+Option 1 — Coverage As JUnit:
+  1. Right-click on any service in Package Explorer
+  2. Coverage As → JUnit Test
+  3. Eclipse runs tests and highlights source code
+  4. Green = covered, Red = not covered
+  5. Coverage view shows % per class
+
+Option 2 — EclEmma plugin (already built into Spring Tools):
+  1. Window → Show View → Coverage
+  2. Run tests via Coverage As → JUnit Test
+  3. Coverage view updates automatically
+
+================================================================================
+IMPROVING COVERAGE
+================================================================================
+
+To increase coverage, add tests for uncovered classes.
+
+Classes that are easy to add coverage for:
+
+1. Entity classes — test getters/setters:
+   User user = new User();
+   user.setName("Test");
+   assertEquals("Test", user.getName());
+
+2. Exception classes — test constructors:
+   UserNotFoundException ex = new UserNotFoundException("msg");
+   assertEquals("msg", ex.getMessage());
+
+3. Application main class — test it starts:
+   @SpringBootTest
+   class AuthServiceApplicationTest {
+       @Test void contextLoads() {}
+   }
+
+Classes that are hard/not worth testing:
+  - SecurityConfig (Spring wiring)
+  - SwaggerConfig (Spring wiring)
+  - RabbitMQConfig (Spring wiring)
+  - JwtAuthFilter (needs full Spring context)
+
+================================================================================
+EXCLUDING CLASSES FROM COVERAGE
+================================================================================
+
+To exclude config/boilerplate classes from coverage calculation,
+add to each service pom.xml inside the jacoco plugin configuration:
+
+  <configuration>
+      <excludes>
+          <exclude>**/config/**</exclude>
+          <exclude>**/security/SecurityConfig.class</exclude>
+          <exclude>**/*Application.class</exclude>
+      </excludes>
+  </configuration>
+
+This makes your coverage % look higher by ignoring untestable classes.
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Generate reports    : mvn clean test
+View report         : open target/site/jacoco/index.html in browser
+Single service      : mvn clean test -pl auth-service
+Skip tests          : mvn clean install -DskipTests (no report generated)
+Raw data file       : target/jacoco.exec
+XML for SonarQube   : target/site/jacoco/jacoco.xml
+
+================================================================================

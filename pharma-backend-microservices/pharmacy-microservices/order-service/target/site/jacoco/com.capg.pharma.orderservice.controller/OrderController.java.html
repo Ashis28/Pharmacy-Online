@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">order-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.orderservice.controller</a> &gt; <span class="el_source">OrderController.java</span></div><h1>OrderController.java</h1><pre class="source lang-java linenums">package com.capg.pharma.orderservice.controller;
+
+import com.capg.pharma.orderservice.dto.OrderRequest;
+import com.capg.pharma.orderservice.dto.OrderResponse;
+import com.capg.pharma.orderservice.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * REST controller for order management endpoints.
+ *
+ * &lt;p&gt;Customers can place orders and view their own. Admins can view all orders,
+ * update statuses, and retrieve revenue/count statistics.&lt;/p&gt;
+ *
+ * &lt;p&gt;Base path: {@code /api/orders}&lt;/p&gt;
+ */
+@RestController
+@RequestMapping(&quot;/api/orders&quot;)
+@Tag(name = &quot;Orders&quot;, description = &quot;Order placement and lifecycle management&quot;)
+public class OrderController {
+
+    private final OrderService orderService;
+
+    /**
+     * Constructs the controller with the order service.
+     *
+     * @param orderService the service handling order business logic
+     */
+<span class="nc" id="L37">    public OrderController(OrderService orderService) {</span>
+<span class="nc" id="L38">        this.orderService = orderService;</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Places a new order for the authenticated customer.
+     * Stock is decremented AFTER the order transaction commits.
+     */
+    @PostMapping
+    @Operation(summary = &quot;Place a new order&quot;)
+    public ResponseEntity&lt;OrderResponse&gt; placeOrder(
+            @Valid @RequestBody OrderRequest req,
+            @RequestHeader(&quot;X-Auth-User&quot;) String email) {
+<span class="nc" id="L50">        OrderResponse order = orderService.placeOrder(req, email);</span>
+        // Decrement stock after the order transaction has committed
+<span class="nc" id="L52">        orderService.decrementStockForOrder(req.getItems());</span>
+<span class="nc" id="L53">        return ResponseEntity.status(HttpStatus.CREATED).body(order);</span>
+    }
+
+    /**
+     * Retrieves a single order by its ID.
+     *
+     * @param id the order's primary key
+     * @return {@code 200 OK} with the order, or {@code 404} if not found
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get order by ID&quot;)
+    public ResponseEntity&lt;OrderResponse&gt; getById(@PathVariable(&quot;id&quot;) Long id) {
+<span class="nc" id="L65">        return ResponseEntity.ok(orderService.getById(id));</span>
+    }
+
+    /**
+     * Retrieves all orders for a specific customer.
+     *
+     * @param customerId the customer's ID
+     * @return {@code 200 OK} with the customer's order history
+     */
+    @GetMapping(&quot;/customer/{customerId}&quot;)
+    @Operation(summary = &quot;Get orders by customer ID&quot;)
+    public ResponseEntity&lt;List&lt;OrderResponse&gt;&gt; getByCustomer(@PathVariable(&quot;customerId&quot;) Long customerId) {
+<span class="nc" id="L77">        return ResponseEntity.ok(orderService.getByCustomer(customerId));</span>
+    }
+
+    /**
+     * Retrieves all orders in the system. Admin only.
+     *
+     * @return {@code 200 OK} with all orders
+     */
+    @GetMapping
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Get all orders (Admin)&quot;)
+    public ResponseEntity&lt;List&lt;OrderResponse&gt;&gt; getAll() {
+<span class="nc" id="L89">        return ResponseEntity.ok(orderService.getAll());</span>
+    }
+
+    /**
+     * Marks an order as PAID after successful payment. Any authenticated user can call this.
+     *
+     * @param id the order's primary key
+     * @return {@code 200 OK} with the updated order
+     */
+    @PutMapping(&quot;/{id}/pay&quot;)
+    @Operation(summary = &quot;Mark order as PAID after payment&quot;)
+    public ResponseEntity&lt;OrderResponse&gt; markAsPaid(@PathVariable(&quot;id&quot;) Long id) {
+<span class="nc" id="L101">        return ResponseEntity.ok(orderService.updateStatus(id, &quot;PAID&quot;));</span>
+    }
+
+    /**
+     * Updates the status of an order. Admin only.
+     *
+     * @param id   the order's primary key
+     * @param body request body containing {@code status}
+     * @return {@code 200 OK} with the updated order
+     */
+    @PutMapping(&quot;/{id}/status&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Update order status (Admin)&quot;)
+    public ResponseEntity&lt;OrderResponse&gt; updateStatus(@PathVariable(&quot;id&quot;) Long id,
+                                                       @RequestBody Map&lt;String, String&gt; body) {
+<span class="nc" id="L116">        return ResponseEntity.ok(orderService.updateStatus(id, body.get(&quot;status&quot;)));</span>
+    }
+
+    /**
+     * Returns the total count of all orders. Admin only.
+     *
+     * @return {@code 200 OK} with the order count
+     */
+    @GetMapping(&quot;/count&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Get total order count (Admin)&quot;)
+    public ResponseEntity&lt;Long&gt; getCount() {
+<span class="nc" id="L128">        return ResponseEntity.ok(orderService.getCount());</span>
+    }
+
+    /**
+     * Returns total revenue from DELIVERED orders within a date range. Admin only.
+     *
+     * @param from start date (ISO format: yyyy-MM-dd)
+     * @param to   end date (ISO format: yyyy-MM-dd)
+     * @return {@code 200 OK} with revenue amount
+     */
+    @GetMapping(&quot;/revenue&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Get revenue between dates (Admin)&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getRevenue(@RequestParam String from,
+                                                           @RequestParam String to) {
+<span class="nc" id="L143">        return ResponseEntity.ok(Map.of(&quot;revenue&quot;, orderService.getRevenueBetween(from, to)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

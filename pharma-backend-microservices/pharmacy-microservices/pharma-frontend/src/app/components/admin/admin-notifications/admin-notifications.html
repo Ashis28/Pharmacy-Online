@@ -1,0 +1,96 @@
+<div class="admin-notifications">
+  <div class="section-header">
+    <div>
+      <h1>Send Notification</h1>
+      <p>Send direct notifications to customers</p>
+    </div>
+  </div>
+
+  <!-- Info banner about notification delivery -->
+  <div class="info-banner">
+    <span class="info-icon">ℹ️</span>
+    <div>
+      <strong>How notifications work:</strong>
+      Notifications are queued via RabbitMQ and processed by the notification service.
+      Currently they are <strong>logged to the server console</strong>.
+      Email/SMS delivery can be enabled by configuring JavaMailSender or Twilio in the notification-service.
+      Customers can see their notification history in the <strong>My Notifications</strong> section.
+    </div>
+  </div>
+
+  <div class="notification-layout">
+    <div class="notification-form-card">
+      @if (success) {
+        <div class="alert alert-success">✅ {{ success }}</div>
+      }
+      @if (error) {
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+      }
+
+      <div class="form-group">
+        <label>Recipient Email *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">✉️</span>
+          <input type="email" [(ngModel)]="form.recipientEmail" placeholder="customer@example.com" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notification Type</label>
+        <select [(ngModel)]="form.type">
+          @for (type of notificationTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Subject *</label>
+        <input type="text" [(ngModel)]="form.subject" placeholder="e.g. Your order has been shipped" />
+      </div>
+
+      <div class="form-group">
+        <label>Message *</label>
+        <textarea [(ngModel)]="form.message" rows="5"
+          placeholder="Enter your notification message..."></textarea>
+      </div>
+
+      <button class="btn-send" (click)="send()" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner"></span> Sending...
+        } @else {
+          🔔 Send Notification
+        }
+      </button>
+    </div>
+
+    <div class="notification-info">
+      <h2>Notification Types</h2>
+      <div class="type-list">
+        @for (type of notificationTypes; track type) {
+          <div class="type-item" (click)="form.type = type" [class.selected]="form.type === type">
+            <span class="type-icon">{{ getTypeIcon(type) }}</span>
+            <span>{{ type }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Sent log -->
+      @if (sentLog.length > 0) {
+        <div class="sent-log">
+          <h3>📋 Recently Sent</h3>
+          @for (log of sentLog; track log.time) {
+            <div class="log-item">
+              <span class="log-icon">{{ getTypeIcon(log.type) }}</span>
+              <div class="log-info">
+                <span class="log-to">{{ log.to }}</span>
+                <span class="log-subject">{{ log.subject }}</span>
+                <span class="log-time">{{ log.time | date:'HH:mm:ss' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

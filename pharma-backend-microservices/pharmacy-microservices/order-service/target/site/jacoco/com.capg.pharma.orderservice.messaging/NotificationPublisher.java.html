@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificationPublisher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">order-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.orderservice.messaging</a> &gt; <span class="el_source">NotificationPublisher.java</span></div><h1>NotificationPublisher.java</h1><pre class="source lang-java linenums">package com.capg.pharma.orderservice.messaging;
+
+import com.capg.pharma.orderservice.dto.NotificationRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.stereotype.Component;
+
+/**
+ * RabbitMQ publisher for order-related notification events.
+ *
+ * &lt;p&gt;Publishes {@link NotificationRequest} messages to the pharmacy exchange.
+ * Failures are caught and logged as warnings — notification delivery is
+ * non-critical and must not block order placement.&lt;/p&gt;
+ */
+@Component
+public class NotificationPublisher {
+
+<span class="fc" id="L19">    private static final Logger log = LoggerFactory.getLogger(NotificationPublisher.class);</span>
+
+    private final RabbitTemplate rabbitTemplate;
+
+    /**
+     * Constructs the publisher with the configured RabbitTemplate.
+     *
+     * @param rabbitTemplate the template for sending messages to RabbitMQ
+     */
+<span class="nc" id="L28">    public NotificationPublisher(RabbitTemplate rabbitTemplate) {</span>
+<span class="nc" id="L29">        this.rabbitTemplate = rabbitTemplate;</span>
+<span class="nc" id="L30">    }</span>
+
+    /**
+     * Publishes a notification event to the pharmacy exchange.
+     *
+     * &lt;p&gt;Sends the message to {@code pharmacy.exchange} with routing key
+     * {@code notification.send}. If RabbitMQ is unavailable, the exception
+     * is caught and logged — the order is not affected.&lt;/p&gt;
+     *
+     * @param request the notification payload to publish
+     */
+    public void publish(NotificationRequest request) {
+        try {
+<span class="nc" id="L43">            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, request);</span>
+<span class="nc" id="L44">            log.info(&quot;[MQ] Notification published: type={} to={}&quot;, request.getType(), request.getRecipientEmail());</span>
+<span class="nc" id="L45">        } catch (Exception e) {</span>
+<span class="nc" id="L46">            log.warn(&quot;[MQ] Failed to publish notification: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: auth-service
+
+  # Optional: import config from Config Server if running
+  config:
+    import: "optional:configserver:http://localhost:8085"
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/auth_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASS:Tapan282@}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 9091
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:pharmacy_super_secret_key_for_hs256_min_32chars}
+  expiration: 86400000
+
+# Admin registration token — must match pattern PHARMA-ADMIN-{year}
+# Override via environment variable: ADMIN_TOKEN=PHARMA-ADMIN-2026
+admin:
+  registration:
+    token: ${ADMIN_TOKEN:PHARMA-ADMIN-2026}
+
+# Zipkin distributed tracing
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
+# Swagger / SpringDoc
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

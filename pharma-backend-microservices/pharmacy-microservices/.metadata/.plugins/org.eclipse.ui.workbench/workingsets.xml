@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1774597094258_0" label="Java Main Sources" name="Java Main Sources"/>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1774597094299_1" label="Java Test Sources" name="Java Test Sources"/>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1777489112022_3" label="pharma-microservices" name="pharma-microservices">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/admin-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/auth-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/catalog-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/eureka-server" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/gateway-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/notification-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/payment-service" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1774597099172_2" label="Window Working Set" name="Aggregate for window 1774597099172"/>
+</workingSetManager>

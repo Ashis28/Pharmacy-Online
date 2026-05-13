@@ -1,0 +1,49 @@
+<div class="admin-layout" [class.sidebar-collapsed]="!sidebarOpen">
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        @if (sidebarOpen) { <span class="brand-text">Admin Panel</span> }
+      </div>
+      <button class="toggle-btn" (click)="sidebarOpen = !sidebarOpen">
+        {{ sidebarOpen ? '&#9664;' : '&#9654;' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">{{ item.icon }}</span>
+          @if (sidebarOpen) { <span class="nav-label">{{ item.label }}</span> }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-info" [style.display]="sidebarOpen ? 'flex' : 'none'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div>
+          <p class="admin-name">{{ auth.currentUser()?.name }}</p>
+          <p class="admin-role">Administrator</p>
+        </div>
+      </div>
+      <a routerLink="/home" class="btn-exit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        @if (sidebarOpen) { <span>Exit Admin</span> }
+      </a>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <div class="topbar-actions">
+        <span class="admin-badge">Admin</span>
+        <button class="btn-logout" (click)="auth.logout()">Logout</button>
+      </div>
+    </div>
+    <div class="admin-content">
+      <router-outlet />
+    </div>
+  </main>
+</div>

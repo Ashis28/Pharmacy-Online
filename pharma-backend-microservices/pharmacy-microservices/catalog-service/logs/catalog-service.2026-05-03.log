@@ -1,0 +1,18 @@
+2026-05-03 03:06:06.570 [main] INFO  c.c.p.c.c.MedicineControllerTest - Starting MedicineControllerTest using Java 17.0.12 with PID 10848 (started by V in D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\catalog-service)
+2026-05-03 03:06:06.582 [main] INFO  c.c.p.c.c.MedicineControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-03 03:06:13.430 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 4e637ed6-a717-4aab-9bc4-9bff2a34f13c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-03 03:06:17.129 [main] INFO  c.c.p.c.c.MedicineControllerTest - Started MedicineControllerTest in 12.549 seconds (process running for 17.063)
+2026-05-03 03:06:19.453 [main] INFO  c.c.p.c.c.PrescriptionControllerTest - Starting PrescriptionControllerTest using Java 17.0.12 with PID 10848 (started by V in D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\catalog-service)
+2026-05-03 03:06:19.454 [main] INFO  c.c.p.c.c.PrescriptionControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-03 03:06:20.500 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: b5bfa6bb-3c27-4b60-bf9e-384cc381b19c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-03 03:06:21.140 [main] INFO  c.c.p.c.c.PrescriptionControllerTest - Started PrescriptionControllerTest in 2.031 seconds (process running for 21.075)

@@ -1,0 +1,3 @@
+# Centralized config for gateway-service
+jwt:
+  secret: ${JWT_SECRET:pharmacy_super_secret_key_for_hs256_min_32chars}

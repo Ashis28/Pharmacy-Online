@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+catalog-service,com.capg.pharma.catalogservice.service,MedicineService,0,247,0,10,0,53,0,20,0,15
+catalog-service,com.capg.pharma.catalogservice.service,PrescriptionService,0,134,0,0,0,30,0,9,0,9
+catalog-service,com.capg.pharma.catalogservice.controller,PrescriptionController,0,53,0,0,0,10,0,6,0,6
+catalog-service,com.capg.pharma.catalogservice.controller,MedicineController,11,51,0,0,2,11,1,8,1,8
+catalog-service,com.capg.pharma.catalogservice.exception,PrescriptionNotFoundException,0,4,0,0,0,1,0,1,0,1
+catalog-service,com.capg.pharma.catalogservice.exception,CategoryNotFoundException,0,4,0,0,0,1,0,1,0,1
+catalog-service,com.capg.pharma.catalogservice.exception,GlobalExceptionHandler,5,121,0,2,1,22,1,9,1,8
+catalog-service,com.capg.pharma.catalogservice.exception,MedicineNotFoundException,0,4,0,0,0,1,0,1,0,1

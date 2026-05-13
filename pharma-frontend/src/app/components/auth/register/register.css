@@ -1,0 +1,47 @@
+﻿.admin-badge {
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.role-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--surface-2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.role-display .role-tag {
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(22,163,74,0.1);
+  color: var(--success);
+  border: 1px solid rgba(22,163,74,0.2);
+}
+.role-display .role-tag.admin {
+  background: rgba(37,99,235,0.1);
+  color: var(--primary);
+  border-color: rgba(37,99,235,0.2);
+}
+.role-display .role-info { color: var(--muted); font-size: 0.8rem; }
+
+.pw-strength { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.pw-strength-bar { flex: 1; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.pw-strength-fill { height: 100%; border-radius: 99px; transition: width 0.3s ease, background 0.3s ease; }
+.pw-strength-label { font-size: 0.75rem; font-weight: 600; white-space: nowrap; min-width: 70px; text-align: right; }
+
+.pw-tips { list-style: none; margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.pw-tips li { font-size: 0.75rem; color: var(--muted); padding-left: 1rem; position: relative; }
+.pw-tips li::before { content: '·'; position: absolute; left: 0; color: var(--muted-2); }
+
+.token-required { color: var(--danger); font-size: 0.8rem; }
+.token-info { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }

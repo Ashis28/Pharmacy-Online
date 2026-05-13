@@ -1,0 +1,75 @@
+2026-05-03 02:58:14.317 [main] INFO  c.c.p.n.NotificationServiceApplication - Starting NotificationServiceApplication using Java 21.0.7 with PID 14440 (D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\notification-service\target\notification-service-1.0.0.jar started by V in D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices)
+2026-05-03 02:58:14.417 [main] INFO  c.c.p.n.NotificationServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-03 02:58:28.557 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-05-03 02:58:28.588 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-05-03 02:58:31.869 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9096"]
+2026-05-03 02:58:31.929 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-03 02:58:32.002 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-03 02:58:32.781 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-05-03 02:58:43.938 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 38311cc4-d40e-4ecd-9698-a212393930b2
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-03 02:58:50.803 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-05-03 02:58:52.726 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-9096"]
+2026-05-03 02:58:55.094 [main] INFO  c.c.p.n.NotificationServiceApplication - Started NotificationServiceApplication in 48.072 seconds (process running for 52.211)
+2026-05-03 03:01:48.658 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.l.NotificationListener - [NOTIFICATION] type=ORDER_PLACED to=finaltest_deploy@pharma.com subject=Order Placed - #40
+2026-05-03 03:01:48.685 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.service.EmailService - [EMAIL-DISABLED] Would send to=finaltest_deploy@pharma.com subject='Order Placed - #40' body='Your order #40 has been placed. Total: Rs.15.00'
+2026-05-03 03:02:22.849 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.l.NotificationListener - [NOTIFICATION] type=ORDER_PLACED to=finaltest_deploy@pharma.com subject=Order Placed - #41
+2026-05-03 03:02:22.851 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.service.EmailService - [EMAIL-DISABLED] Would send to=finaltest_deploy@pharma.com subject='Order Placed - #41' body='Your order #41 has been placed. Total: Rs.15.00'
+2026-05-03 03:02:27.021 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.l.NotificationListener - [NOTIFICATION] type=ORDER_PLACED to=finaltest_deploy@pharma.com subject=Order Placed - #42
+2026-05-03 03:02:27.021 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.service.EmailService - [EMAIL-DISABLED] Would send to=finaltest_deploy@pharma.com subject='Order Placed - #42' body='Your order #42 has been placed. Total: Rs.15.00'
+2026-05-03 03:02:27.459 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.l.NotificationListener - [NOTIFICATION] type=ORDER_PLACED to=finaltest_deploy@pharma.com subject=Order Placed - #43
+2026-05-03 03:02:27.460 [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-1] INFO  c.c.p.n.service.EmailService - [EMAIL-DISABLED] Would send to=finaltest_deploy@pharma.com subject='Order Placed - #43' body='Your order #43 has been placed. Total: Rs.15.00'
+2026-05-03 03:03:04.966 [http-nio-9096-exec-4] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-03 03:03:05.493 [http-nio-9096-exec-4] INFO  c.c.p.n.l.NotificationListener - [NOTIFICATION] type=DEPLOY_TEST to=finaltest_deploy@pharma.com subject=Deploy Test Notification
+2026-05-03 03:03:05.494 [http-nio-9096-exec-4] INFO  c.c.p.n.service.EmailService - [EMAIL-DISABLED] Would send to=finaltest_deploy@pharma.com subject='Deploy Test Notification' body='System is working correctly.'
+2026-05-03 03:03:06.485 [AsyncReporter{org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinRestTemplateSender@5215c629}] WARN  z.r.AsyncReporter$BoundedAsyncReporter - Spans were dropped due to exceptions. All subsequent errors will be logged at FINE level.
+2026-05-03 03:03:06.486 [AsyncReporter{org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinRestTemplateSender@5215c629}] WARN  z.r.AsyncReporter$BoundedAsyncReporter - Dropped 5 spans due to ResourceAccessException(I/O error on POST request for "http://localhost:9411/api/v2/spans": Connect to http://localhost:9411 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: getsockopt)
+org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:9411/api/v2/spans": Connect to http://localhost:9411 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.exchange(RestTemplate.java:672)
+	at org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinRestTemplateSender$RestTemplateHttpPostCall.doExecute(ZipkinRestTemplateSender.java:68)
+	at org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinRestTemplateSender$RestTemplateHttpPostCall.doExecute(ZipkinRestTemplateSender.java:48)
+	at zipkin2.Call$Base.execute(Call.java:391)
+	at zipkin2.reporter.AsyncReporter$BoundedAsyncReporter.flush(AsyncReporter.java:299)
+	at zipkin2.reporter.AsyncReporter$Flusher.run(AsyncReporter.java:378)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.apache.hc.client5.http.HttpHostConnectException: Connect to http://localhost:9411 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.apache.hc.client5.http.socket.PlainConnectionSocketFactory.lambda$connectSocket$0(PlainConnectionSocketFactory.java:91)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+	at org.apache.hc.client5.http.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:90)
+	at org.apache.hc.client5.http.socket.ConnectionSocketFactory.connectSocket(ConnectionSocketFactory.java:123)
+	at org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:184)
+	at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:447)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:162)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:172)
+	at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:142)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ProtocolExec.execute(ProtocolExec.java:192)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.HttpRequestRetryExec.execute(HttpRequestRetryExec.java:96)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ContentCompressionExec.execute(ContentCompressionExec.java:152)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.RedirectExec.execute(RedirectExec.java:115)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.InternalHttpClient.doExecute(InternalHttpClient.java:170)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:87)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:55)
+	at org.apache.hc.client5.http.classic.HttpClient.executeOpen(HttpClient.java:183)
+	at org.springframework.http.client.HttpComponentsClientHttpRequest.executeInternal(HttpComponentsClientHttpRequest.java:95)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 8 common frames omitted

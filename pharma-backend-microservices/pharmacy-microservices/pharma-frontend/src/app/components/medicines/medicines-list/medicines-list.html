@@ -1,0 +1,125 @@
+<div class="medicines-page">
+  <!-- Login required toast -->
+  @if (loginRequired) {
+    <div class="login-toast">
+      🔒 Please <a routerLink="/login">login</a> to add items to your cart
+    </div>
+  }
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Medicine Catalog</h1>
+      <p>Browse our complete range of authentic medicines</p>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search medicines..."
+        />
+        @if (searchQuery) {
+          <button class="clear-search" (click)="searchQuery=''; loadMedicines()">✕</button>
+        }
+      </div>
+
+      <div class="filter-group">
+        <select [(ngModel)]="filterRx" (ngModelChange)="applyFilters()">
+          <option value="all">All Types</option>
+          <option value="otc">OTC Only</option>
+          <option value="rx">Rx Required</option>
+        </select>
+
+        <select [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+          <option value="name">Sort: Name</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+        </select>
+      </div>
+
+      <span class="results-count">{{ filtered.length }} medicines found</span>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+      <div class="loading-grid">
+        @for (i of [1,2,3,4,5,6,8,9]; track i) {
+          <div class="skeleton-card"></div>
+        }
+      </div>
+    }
+
+    <!-- Medicines Grid -->
+    @if (!loading) {
+      @if (filtered.length === 0) {
+        <div class="empty-state">
+          <span>🔍</span>
+          <h3>No medicines found</h3>
+          <p>Try adjusting your search or filters</p>
+        </div>
+      } @else {
+        <div class="medicines-grid">
+          @for (medicine of filtered; track medicine.id) {
+            <div class="medicine-card" [class.out-of-stock]="medicine.stockQuantity === 0">
+              <div class="card-header">
+                <div class="medicine-icon">💊</div>
+                <div class="badges">
+                  @if (medicine.requiresPrescription) {
+                    <span class="badge rx">Rx</span>
+                  } @else {
+                    <span class="badge otc">OTC</span>
+                  }
+                  @if (medicine.stockQuantity === 0) {
+                    <span class="badge out">Out of Stock</span>
+                  } @else if (medicine.stockQuantity <= 10) {
+                    <span class="badge low">Low Stock</span>
+                  }
+                </div>
+              </div>
+
+              <div class="card-body">
+                <h3>{{ medicine.name }}</h3>
+                <p class="description">{{ medicine.description || 'Quality pharmaceutical product' }}</p>
+
+                <div class="medicine-details">
+                  @if (medicine.expiryDate) {
+                    <span class="detail">📅 Exp: {{ medicine.expiryDate }}</span>
+                  }
+                  @if (medicine.categoryName) {
+                    <span class="detail">🏷️ {{ medicine.categoryName }}</span>
+                  }
+                  <span class="detail stock-info" [class.low-stock]="medicine.stockQuantity <= 10">
+                    📦 {{ medicine.stockQuantity }} units
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <span class="price">₹{{ medicine.price | number:'1.2-2' }}</span>
+                <button
+                  class="btn-cart"
+                  [class.added]="addedToCart.has(medicine.id!)"
+                  (click)="addToCart(medicine)"
+                  [disabled]="medicine.stockQuantity === 0">
+                  @if (addedToCart.has(medicine.id!)) {
+                    ✅ Added!
+                  } @else if (!auth.isLoggedIn()) {
+                    🔒 Login to Buy
+                  } @else {
+                    🛒 Add to Cart
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

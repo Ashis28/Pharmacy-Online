@@ -1,0 +1,32 @@
+2026-05-03 02:58:12.231 [main] INFO  c.c.p.o.OrderServiceApplication - Starting OrderServiceApplication using Java 21.0.7 with PID 13772 (D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\order-service\target\order-service-1.0.0.jar started by V in D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices)
+2026-05-03 02:58:12.343 [main] INFO  c.c.p.o.OrderServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-03 02:58:35.314 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-05-03 02:58:35.357 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-05-03 02:58:39.845 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9093"]
+2026-05-03 02:58:39.858 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-03 02:58:39.868 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-03 02:58:40.295 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-05-03 02:58:49.629 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-03 02:58:50.561 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6c569caf
+2026-05-03 02:58:50.571 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-03 02:58:50.816 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 5.5.27 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-05-03 02:58:50.848 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 02:59:02.315 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 02:59:07.927 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 1b482374-0ce7-4843-a674-ecc4a771b614
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-03 02:59:16.461 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-05-03 02:59:18.276 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-9093"]
+2026-05-03 02:59:18.415 [main] INFO  c.c.p.o.OrderServiceApplication - Started OrderServiceApplication in 76.645 seconds (process running for 79.688)
+2026-05-03 03:01:46.285 [http-nio-9093-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-03 03:01:48.216 [http-nio-9093-exec-1] INFO  c.c.p.o.m.NotificationPublisher - [MQ] Notification published: type=ORDER_PLACED to=finaltest_deploy@pharma.com
+2026-05-03 03:01:48.285 [http-nio-9093-exec-1] ERROR c.c.p.o.service.OrderService - [STOCK] Failed to decrement stock for medicine id=2 qty=1: Invalid HTTP method: PATCH executing PATCH http://catalog-service/api/catalog/medicines/2/stock?quantity=1
+2026-05-03 03:02:22.838 [http-nio-9093-exec-8] INFO  c.c.p.o.m.NotificationPublisher - [MQ] Notification published: type=ORDER_PLACED to=finaltest_deploy@pharma.com
+2026-05-03 03:02:22.847 [http-nio-9093-exec-8] ERROR c.c.p.o.service.OrderService - [STOCK] Failed to decrement stock for medicine id=2 qty=1: Invalid HTTP method: PATCH executing PATCH http://catalog-service/api/catalog/medicines/2/stock?quantity=1
+2026-05-03 03:02:26.998 [http-nio-9093-exec-7] INFO  c.c.p.o.m.NotificationPublisher - [MQ] Notification published: type=ORDER_PLACED to=finaltest_deploy@pharma.com
+2026-05-03 03:02:27.005 [http-nio-9093-exec-7] ERROR c.c.p.o.service.OrderService - [STOCK] Failed to decrement stock for medicine id=2 qty=1: Invalid HTTP method: PATCH executing PATCH http://catalog-service/api/catalog/medicines/2/stock?quantity=1
+2026-05-03 03:02:27.451 [http-nio-9093-exec-10] INFO  c.c.p.o.m.NotificationPublisher - [MQ] Notification published: type=ORDER_PLACED to=finaltest_deploy@pharma.com
+2026-05-03 03:02:27.459 [http-nio-9093-exec-10] ERROR c.c.p.o.service.OrderService - [STOCK] Failed to decrement stock for medicine id=2 qty=1: Invalid HTTP method: PATCH executing PATCH http://catalog-service/api/catalog/medicines/2/stock?quantity=1

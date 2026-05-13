@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  config:
+    import: "optional:configserver:"
+  cloud:
+    config:
+      enabled: false
+  autoconfigure:
+    exclude: org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+
+server:
+  port: 0
+
+eureka:
+  client:
+    enabled: false
+
+jwt:
+  secret: test_secret_key_for_unit_tests_min_32chars!!
+  expiration: 86400000
+
+management:
+  tracing:
+    sampling:
+      probability: 0.0

@@ -1,0 +1,88 @@
+<div class="cart-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Shopping Cart</h1>
+      <p>{{ cart.cartCount() }} item(s) in your cart</p>
+    </div>
+  </div>
+
+  <div class="cart-body">
+    @if (cart.cartItems().length === 0) {
+      <div class="empty-cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <h2>Your cart is empty</h2>
+        <p>Add medicines to your cart to place an order</p>
+        <a routerLink="/medicines" class="btn-browse">Browse Medicines</a>
+      </div>
+    } @else {
+      <div class="cart-layout">
+        <div class="cart-items">
+          <h2>Cart Items</h2>
+          @for (item of cart.cartItems(); track item.medicine.id) {
+            <div class="cart-item">
+              <div class="item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              </div>
+              <div class="item-info">
+                <h3>{{ item.medicine.name }}</h3>
+                <p>&#8377;{{ item.medicine.price | number:'1.2-2' }} per unit</p>
+                @if (item.medicine.requiresPrescription) {
+                  <span class="rx-note">Prescription required</span>
+                }
+              </div>
+              <div class="item-controls">
+                <button class="qty-btn" (click)="cart.updateQuantity(item.medicine.id!, item.quantity - 1)">&#8722;</button>
+                <span class="qty">{{ item.quantity }}</span>
+                <button class="qty-btn"
+                  [disabled]="item.quantity >= item.medicine.stockQuantity"
+                  (click)="cart.updateQuantity(item.medicine.id!, item.quantity + 1)">+</button>
+              </div>
+              <div class="item-total">&#8377;{{ (item.medicine.price * item.quantity) | number:'1.2-2' }}</div>
+              @if (item.quantity >= item.medicine.stockQuantity) {
+                <span class="stock-max-badge">Max</span>
+              }
+              <button class="btn-remove" (click)="cart.removeFromCart(item.medicine.id!)" title="Remove">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="order-summary">
+          <h2>Order Summary</h2>
+          <div class="summary-lines">
+            @for (item of cart.cartItems(); track item.medicine.id) {
+              <div class="summary-line">
+                <span>{{ item.medicine.name }} &times; {{ item.quantity }}</span>
+                <span>&#8377;{{ (item.medicine.price * item.quantity) | number:'1.2-2' }}</span>
+              </div>
+            }
+            <div class="summary-divider"></div>
+            <div class="summary-line total">
+              <span>Total</span>
+              <span>&#8377;{{ cart.cartTotal() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          @if (auth.isLoggedIn()) {
+            <div class="delivery-section">
+              <label>Delivery Address *</label>
+              <textarea [(ngModel)]="deliveryAddress" placeholder="Enter your full delivery address..." rows="3"></textarea>
+            </div>
+            @if (error) { <div class="alert-error">{{ error }}</div> }
+            <button class="btn-order" (click)="placeOrder()" [disabled]="loading">
+              @if (loading) { <span class="spinner"></span> Placing Order... }
+              @else { Place Order &mdash; &#8377;{{ cart.cartTotal() | number:'1.2-2' }} }
+            </button>
+          } @else {
+            <div class="login-prompt">
+              <p>Please login to place your order</p>
+              <a routerLink="/login" class="btn-login">Login to Continue</a>
+            </div>
+          }
+          <button class="btn-clear" (click)="cart.clearCart()">Clear Cart</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

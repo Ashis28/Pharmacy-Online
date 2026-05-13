@@ -1,0 +1,9 @@
+2026-05-03 03:05:44.265 [main] INFO  c.c.p.a.c.AuthControllerTest - Starting AuthControllerTest using Java 17.0.12 with PID 24048 (started by V in D:\yosker\PharmacyOnline\janviProject\pharmacy-microservices\auth-service)
+2026-05-03 03:05:44.284 [main] INFO  c.c.p.a.c.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-03 03:05:54.087 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: a85bc403-7e66-48ab-986b-31071dcdd092
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-03 03:05:54.957 [main] INFO  c.c.p.a.c.AuthControllerTest - Started AuthControllerTest in 13.521 seconds (process running for 19.085)

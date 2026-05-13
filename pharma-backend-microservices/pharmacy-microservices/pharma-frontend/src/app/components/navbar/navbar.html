@@ -1,0 +1,51 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a routerLink="/home" class="nav-brand">
+      <span class="brand-icon">💊</span>
+      <span class="brand-text">PharmaOnline</span>
+    </a>
+
+    <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-links" [class.open]="menuOpen">
+
+      @if (auth.isLoggedIn()) {
+        <!-- Logged-in links -->
+        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+        <a routerLink="/medicines" routerLinkActive="active">Medicines</a>
+
+        @if (auth.isCustomer()) {
+          <a routerLink="/orders" routerLinkActive="active">My Orders</a>
+          <a routerLink="/prescriptions" routerLinkActive="active">Prescriptions</a>
+          <a routerLink="/notifications" routerLinkActive="active">🔔 Notifications</a>
+        }
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin/dashboard" routerLinkActive="active">Admin Panel</a>
+        }
+
+        <div class="nav-actions">
+          <a routerLink="/cart" class="cart-btn">
+            🛒
+            @if (cart.cartCount() > 0) {
+              <span class="cart-badge">{{ cart.cartCount() }}</span>
+            }
+          </a>
+          <div class="user-menu">
+            <span class="user-name">{{ auth.currentUser()?.name }}</span>
+            <button class="btn-logout" (click)="logout()">Logout</button>
+          </div>
+        </div>
+
+      } @else {
+        <!-- Guest links — only Login and Register -->
+        <div class="nav-actions">
+          <a routerLink="/login" class="btn-nav btn-outline">Login</a>
+          <a routerLink="/register" class="btn-nav btn-primary">Register</a>
+        </div>
+      }
+
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,102 @@
+<div class="cart-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🛒 Shopping Cart</h1>
+      <p>{{ cart.cartCount() }} item(s) in your cart</p>
+    </div>
+  </div>
+
+  <div class="cart-body">
+    @if (cart.cartItems().length === 0) {
+      <div class="empty-cart">
+        <span class="empty-icon">🛒</span>
+        <h2>Your cart is empty</h2>
+        <p>Add medicines to your cart to place an order</p>
+        <a routerLink="/medicines" class="btn-browse">Browse Medicines</a>
+      </div>
+    } @else {
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items">
+          <h2>Cart Items</h2>
+          @for (item of cart.cartItems(); track item.medicine.id) {
+            <div class="cart-item">
+              <div class="item-icon">💊</div>
+              <div class="item-info">
+                <h3>{{ item.medicine.name }}</h3>
+                <p>₹{{ item.medicine.price | number:'1.2-2' }} per unit</p>
+                @if (item.medicine.requiresPrescription) {
+                  <span class="rx-note">⚠️ Prescription required</span>
+                }
+              </div>
+              <div class="item-controls">
+                <button class="qty-btn" (click)="cart.updateQuantity(item.medicine.id!, item.quantity - 1)">−</button>
+                <span class="qty">{{ item.quantity }}</span>
+                <button class="qty-btn"
+                  [disabled]="item.quantity >= item.medicine.stockQuantity"
+                  [title]="item.quantity >= item.medicine.stockQuantity ? 'Max stock reached (' + item.medicine.stockQuantity + ')' : ''"
+                  (click)="cart.updateQuantity(item.medicine.id!, item.quantity + 1)">+</button>
+              </div>
+              <div class="item-total">
+                ₹{{ (item.medicine.price * item.quantity) | number:'1.2-2' }}
+              </div>
+              @if (item.quantity >= item.medicine.stockQuantity) {
+                <span class="stock-max-badge">Max stock</span>
+              }
+              <button class="btn-remove" (click)="cart.removeFromCart(item.medicine.id!)">🗑️</button>
+            </div>
+          }
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h2>Order Summary</h2>
+
+          <div class="summary-lines">
+            @for (item of cart.cartItems(); track item.medicine.id) {
+              <div class="summary-line">
+                <span>{{ item.medicine.name }} × {{ item.quantity }}</span>
+                <span>₹{{ (item.medicine.price * item.quantity) | number:'1.2-2' }}</span>
+              </div>
+            }
+            <div class="summary-divider"></div>
+            <div class="summary-line total">
+              <span>Total</span>
+              <span>₹{{ cart.cartTotal() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          @if (auth.isLoggedIn()) {
+            <div class="delivery-section">
+              <label>Delivery Address *</label>
+              <textarea
+                [(ngModel)]="deliveryAddress"
+                placeholder="Enter your full delivery address..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            @if (error) {
+              <div class="alert-error">⚠️ {{ error }}</div>
+            }
+
+            <button class="btn-order" (click)="placeOrder()" [disabled]="loading">
+              @if (loading) {
+                <span class="spinner"></span> Placing Order...
+              } @else {
+                Place Order — ₹{{ cart.cartTotal() | number:'1.2-2' }}
+              }
+            </button>
+          } @else {
+            <div class="login-prompt">
+              <p>Please login to place your order</p>
+              <a routerLink="/login" class="btn-login">Login to Continue</a>
+            </div>
+          }
+
+          <button class="btn-clear" (click)="cart.clearCart()">Clear Cart</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

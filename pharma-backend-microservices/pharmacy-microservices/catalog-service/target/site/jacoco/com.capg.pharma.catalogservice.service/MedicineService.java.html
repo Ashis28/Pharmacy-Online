@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MedicineService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">catalog-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.catalogservice.service</a> &gt; <span class="el_source">MedicineService.java</span></div><h1>MedicineService.java</h1><pre class="source lang-java linenums">package com.capg.pharma.catalogservice.service;
+
+import com.capg.pharma.catalogservice.dto.MedicineRequest;
+import com.capg.pharma.catalogservice.dto.MedicineResponse;
+import com.capg.pharma.catalogservice.entity.Category;
+import com.capg.pharma.catalogservice.entity.Medicine;
+import com.capg.pharma.catalogservice.exception.CategoryNotFoundException;
+import com.capg.pharma.catalogservice.exception.MedicineNotFoundException;
+import com.capg.pharma.catalogservice.repository.CategoryRepository;
+import com.capg.pharma.catalogservice.repository.MedicineRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Business logic service for medicine catalog operations.
+ *
+ * &lt;p&gt;Handles CRUD operations for medicines, name-based search, and
+ * low-stock reporting. Category validation is performed on create/update.&lt;/p&gt;
+ */
+@Service
+public class MedicineService {
+
+    private final MedicineRepository medicineRepo;
+    private final CategoryRepository categoryRepo;
+
+    /**
+     * Constructs MedicineService with required repositories.
+     *
+     * @param medicineRepo  repository for medicine persistence
+     * @param categoryRepo  repository for category lookups
+     */
+<span class="fc" id="L34">    public MedicineService(MedicineRepository medicineRepo, CategoryRepository categoryRepo) {</span>
+<span class="fc" id="L35">        this.medicineRepo = medicineRepo;</span>
+<span class="fc" id="L36">        this.categoryRepo = categoryRepo;</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Retrieves all medicines in the catalog.
+     *
+     * @return list of all medicines as response DTOs
+     */
+    public List&lt;MedicineResponse&gt; getAll() {
+<span class="fc" id="L45">        return medicineRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieves a single medicine by its ID.
+     *
+     * @param id the medicine's primary key
+     * @return the medicine as a response DTO
+     * @throws MedicineNotFoundException if no medicine exists with the given ID
+     */
+    public MedicineResponse getById(Long id) {
+<span class="fc" id="L56">        return toResponse(medicineRepo.findById(id)</span>
+<span class="fc" id="L57">                .orElseThrow(() -&gt; new MedicineNotFoundException(&quot;Medicine not found with id: &quot; + id)));</span>
+    }
+
+    /**
+     * Searches medicines by name (case-insensitive partial match).
+     *
+     * @param name the search term
+     * @return list of matching medicines
+     */
+    public List&lt;MedicineResponse&gt; search(String name) {
+<span class="fc" id="L67">        return medicineRepo.findByNameContainingIgnoreCase(name).stream()</span>
+<span class="fc" id="L68">                .map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Creates a new medicine in the catalog.
+     *
+     * @param req the medicine creation request
+     * @return the created medicine as a response DTO
+     * @throws CategoryNotFoundException if the specified categoryId does not exist
+     */
+    public MedicineResponse create(MedicineRequest req) {
+<span class="fc" id="L79">        Medicine m = new Medicine();</span>
+<span class="fc" id="L80">        mapFields(m, req);</span>
+<span class="fc" id="L81">        return toResponse(medicineRepo.save(m));</span>
+    }
+
+    /**
+     * Updates an existing medicine's details.
+     *
+     * @param id  the medicine's primary key
+     * @param req the update request
+     * @return the updated medicine as a response DTO
+     * @throws MedicineNotFoundException if no medicine exists with the given ID
+     * @throws CategoryNotFoundException if the specified categoryId does not exist
+     */
+    public MedicineResponse update(Long id, MedicineRequest req) {
+<span class="fc" id="L94">        Medicine m = medicineRepo.findById(id)</span>
+<span class="fc" id="L95">                .orElseThrow(() -&gt; new MedicineNotFoundException(&quot;Medicine not found with id: &quot; + id));</span>
+<span class="fc" id="L96">        mapFields(m, req);</span>
+<span class="fc" id="L97">        return toResponse(medicineRepo.save(m));</span>
+    }
+
+    /**
+     * Deletes a medicine from the catalog.
+     *
+     * @param id the medicine's primary key
+     * @throws MedicineNotFoundException if no medicine exists with the given ID
+     */
+    public void delete(Long id) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (!medicineRepo.existsById(id)) {</span>
+<span class="fc" id="L108">            throw new MedicineNotFoundException(&quot;Medicine not found with id: &quot; + id);</span>
+        }
+<span class="fc" id="L110">        medicineRepo.deleteById(id);</span>
+<span class="fc" id="L111">    }</span>
+
+    /**
+     * Decrements the stock quantity of a medicine by the given amount.
+     * Called internally by order-service after an order is placed.
+     *
+     * @param id       the medicine's primary key
+     * @param quantity the quantity to deduct (must be positive)
+     * @throws MedicineNotFoundException    if no medicine exists with the given ID
+     * @throws IllegalArgumentException     if quantity exceeds available stock
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public void decrementStock(Long id, int quantity) {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (!medicineRepo.existsById(id)) {</span>
+<span class="fc" id="L125">            throw new MedicineNotFoundException(&quot;Medicine not found with id: &quot; + id);</span>
+        }
+<span class="fc" id="L127">        int updated = medicineRepo.decrementStock(id, quantity);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (updated == 0) {</span>
+            // Row wasn't updated — stock was insufficient
+<span class="fc" id="L130">            MedicineResponse m = getById(id);</span>
+<span class="fc" id="L131">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L132">                    &quot;Insufficient stock for '&quot; + m.getName() +</span>
+<span class="fc" id="L133">                    &quot;'. Available: &quot; + m.getStockQuantity() + &quot;, requested: &quot; + quantity);</span>
+        }
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Returns the count of medicines with stock at or below 10 units.
+     *
+     * @return count of low-stock medicines
+     */
+    public long getLowStockCount() {
+<span class="fc" id="L143">        return medicineRepo.countLowStock();</span>
+    }
+
+    /**
+     * Returns all medicines with stock at or below 10 units.
+     *
+     * @return list of low-stock medicines
+     */
+    public List&lt;MedicineResponse&gt; getLowStockMedicines() {
+<span class="fc" id="L152">        return medicineRepo.findLowStockMedicines().stream()</span>
+<span class="fc" id="L153">                .map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Maps fields from a request DTO onto a Medicine entity.
+     * Resolves the category by ID if provided.
+     *
+     * @param m   the medicine entity to populate
+     * @param req the source request DTO
+     * @throws CategoryNotFoundException if the categoryId is provided but not found
+     */
+    private void mapFields(Medicine m, MedicineRequest req) {
+<span class="fc" id="L165">        m.setName(req.getName());</span>
+<span class="fc" id="L166">        m.setDescription(req.getDescription());</span>
+<span class="fc" id="L167">        m.setPrice(req.getPrice());</span>
+<span class="fc" id="L168">        m.setStockQuantity(req.getStockQuantity());</span>
+<span class="fc" id="L169">        m.setRequiresPrescription(req.isRequiresPrescription());</span>
+<span class="fc" id="L170">        m.setExpiryDate(req.getExpiryDate());</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (req.getCategoryId() != null) {</span>
+<span class="fc" id="L172">            Category cat = categoryRepo.findById(req.getCategoryId())</span>
+<span class="fc" id="L173">                    .orElseThrow(() -&gt; new CategoryNotFoundException(&quot;Category not found with id: &quot; + req.getCategoryId()));</span>
+<span class="fc" id="L174">            m.setCategory(cat);</span>
+        }
+<span class="fc" id="L176">    }</span>
+
+    /**
+     * Converts a Medicine entity to a MedicineResponse DTO.
+     *
+     * @param m the medicine entity
+     * @return the response DTO
+     */
+    private MedicineResponse toResponse(Medicine m) {
+<span class="fc" id="L185">        MedicineResponse r = new MedicineResponse();</span>
+<span class="fc" id="L186">        r.setId(m.getId());</span>
+<span class="fc" id="L187">        r.setName(m.getName());</span>
+<span class="fc" id="L188">        r.setDescription(m.getDescription());</span>
+<span class="fc" id="L189">        r.setPrice(m.getPrice());</span>
+<span class="fc" id="L190">        r.setStockQuantity(m.getStockQuantity());</span>
+<span class="fc" id="L191">        r.setRequiresPrescription(m.isRequiresPrescription());</span>
+<span class="fc" id="L192">        r.setExpiryDate(m.getExpiryDate());</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (m.getCategory() != null) r.setCategoryName(m.getCategory().getName());</span>
+<span class="fc" id="L194">        return r;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

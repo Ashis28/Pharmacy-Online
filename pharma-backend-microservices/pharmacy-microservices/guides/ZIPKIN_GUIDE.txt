@@ -1,0 +1,127 @@
+================================================================================
+  ZIPKIN DISTRIBUTED TRACING GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS ZIPKIN?
+---------------
+Zipkin is a distributed tracing system. It helps you track requests as they
+flow through multiple microservices, showing you:
+  - Which services were called
+  - How long each service took
+  - Where failures or latency occurred
+  - The full call chain for a single user request
+
+In this project, a single customer request (e.g. place order) may touch:
+  gateway → order-service → catalog-service → notification-service
+Zipkin shows this entire chain as a single "trace".
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+1. Each service generates a Trace ID (unique per request) and Span ID
+   (unique per service hop) using Micrometer Brave.
+2. These IDs are propagated via HTTP headers (B3 propagation):
+     X-B3-TraceId, X-B3-SpanId, X-B3-ParentSpanId
+3. Each service reports its span to the Zipkin server asynchronously.
+4. Zipkin UI assembles the spans into a visual trace timeline.
+
+--------------------------------------------------------------------------------
+DEPENDENCIES (already added to all service pom.xml files)
+--------------------------------------------------------------------------------
+
+  <!-- Micrometer Brave bridge (generates trace/span IDs) -->
+  <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-brave</artifactId>
+  </dependency>
+
+  <!-- Zipkin reporter (sends spans to Zipkin server) -->
+  <dependency>
+      <groupId>io.zipkin.reporter2</groupId>
+      <artifactId>zipkin-reporter-brave</artifactId>
+  </dependency>
+
+--------------------------------------------------------------------------------
+CONFIGURATION (already in all application.yml files)
+--------------------------------------------------------------------------------
+
+  management:
+    tracing:
+      sampling:
+        probability: 1.0   # Trace 100% of requests (use 0.1 for 10% in production)
+    zipkin:
+      tracing:
+        endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
+ZIPKIN_HOST defaults to localhost. In Docker Compose it's set to "zipkin".
+
+--------------------------------------------------------------------------------
+RUNNING ZIPKIN LOCALLY
+--------------------------------------------------------------------------------
+
+Option 1 - Docker (recommended):
+  docker run -d --name zipkin -p 9411:9411 openzipkin/zipkin
+
+Option 2 - Docker Compose (already configured):
+  docker-compose up zipkin
+
+Option 3 - Java JAR:
+  curl -sSL https://zipkin.io/quickstart.sh | bash -s
+  java -jar zipkin.jar
+
+--------------------------------------------------------------------------------
+ZIPKIN UI
+--------------------------------------------------------------------------------
+
+URL: http://localhost:9411
+
+From the UI you can:
+  1. Click "Run Query" to see recent traces
+  2. Click a trace to see the full call chain
+  3. See timing for each service hop
+  4. Filter by service name, duration, or date range
+  5. Identify slow services or failed spans
+
+--------------------------------------------------------------------------------
+READING A TRACE
+--------------------------------------------------------------------------------
+
+Example trace for "Place Order":
+
+  gateway-service        [50ms]  ─────────────────────────────────────
+    order-service        [45ms]    ──────────────────────────────────
+      catalog-service    [10ms]      ──────────
+      notification-svc   [2ms]                  ──
+
+Each bar shows:
+  - Service name
+  - Duration of that service's processing
+  - Parent-child relationship (indentation)
+
+--------------------------------------------------------------------------------
+SAMPLING IN PRODUCTION
+--------------------------------------------------------------------------------
+
+For production, reduce sampling to avoid performance overhead:
+
+  management:
+    tracing:
+      sampling:
+        probability: 0.1  # Sample 10% of requests
+
+For debugging specific issues, temporarily set to 1.0.
+
+--------------------------------------------------------------------------------
+TRACE ID IN LOGS
+--------------------------------------------------------------------------------
+
+With Micrometer tracing, logs automatically include trace/span IDs:
+
+  2026-03-28 10:00:00 INFO [order-service,abc123,def456] OrderService - Order placed: 42
+
+Format: [service-name, traceId, spanId]
+
+This lets you correlate logs across services for a single request.
+
+================================================================================

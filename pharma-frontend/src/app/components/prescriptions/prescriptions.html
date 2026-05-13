@@ -1,0 +1,151 @@
+<div class="prescriptions-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>My Prescriptions</h1>
+      <p>Upload and track your prescription approvals</p>
+    </div>
+  </div>
+
+  <div class="prescriptions-body">
+    <!-- Upload Section -->
+    <div class="upload-card">
+      <div class="card-title-row">
+        <div>
+          <h2>Upload Prescription</h2>
+          <p class="upload-info">
+            Paste a prescription image URL. Our pharmacists will review it shortly.
+          </p>
+        </div>
+        <div class="chip chip-info">Medical Document</div>
+      </div>
+
+      @if (error) { <div class="alert alert-error">{{ error }}</div> }
+      @if (success) { <div class="alert alert-success">{{ success }}</div> }
+
+      <div class="upload-form">
+        <div class="input-group">
+          <label>Prescription Image URL</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              </span>
+            <input
+              type="url"
+              [(ngModel)]="imageUrl"
+              placeholder="https://example.com/prescription.jpg"
+            />
+          </div>
+          <span class="hint">Supported: JPG / PNG / PDF link</span>
+        </div>
+
+        <button class="btn-upload" (click)="uploadPrescription()" [disabled]="uploading">
+          @if (uploading) {
+            <span class="spinner"></span> Uploading...
+          } @else {
+            Upload
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Prescriptions List -->
+    <div class="prescriptions-list">
+      <div class="list-header">
+        <h2>Prescription Records</h2>
+        <div class="sub">Structured view for quick verification</div>
+      </div>
+
+      @if (loading) {
+        <div class="loading-state">
+          <div class="spinner-large"></div>
+          <p>Loading prescriptions...</p>
+        </div>
+      }
+
+      @if (!loading && prescriptions.length === 0) {
+        <div class="empty-state">
+          <span>📋</span>
+          <p>No prescriptions uploaded yet</p>
+        </div>
+      }
+
+      @if (!loading && prescriptions.length > 0) {
+        <div class="rx-grid">
+          @for (rx of prescriptions; track rx.id) {
+            <article class="rx-doc" [class]="'rx-' + rx.status?.toLowerCase()">
+              <!-- Document header -->
+              <header class="rx-doc__header">
+                <div class="rx-doc__title">
+                  <div class="rx-doc__num">Prescription #{{ rx.id }}</div>
+                  <div class="rx-doc__meta">
+                    <span class="meta-pill">Patient ID: {{ rx.customerId }}</span>
+                    <span class="meta-pill">Uploaded: {{ rx.uploadedAt | date:'medium' }}</span>
+                  </div>
+                </div>
+                <div class="rx-doc__status">
+                  <span class="rx-status" [class]="getStatusClass(rx.status!)">
+                    {{ rx.status }}
+                  </span>
+                </div>
+              </header>
+
+              <!-- Document body -->
+              <section class="rx-doc__section">
+                <div class="section-title">Doctor / Clinic</div>
+                <div class="kv-grid">
+                  <div class="kv">
+                    <div class="k">Prescriber</div>
+                    <div class="v">Not provided in uploaded document</div>
+                  </div>
+                  <div class="kv">
+                    <div class="k">Review</div>
+                    <div class="v">Pharmacist verification</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="rx-doc__section">
+                <div class="section-title">Medicines</div>
+                <div class="table">
+                  <div class="tr th">
+                    <div>Medicine</div>
+                    <div>Dosage</div>
+                    <div>Frequency</div>
+                  </div>
+                  <div class="tr">
+                    <div class="muted">From prescription image</div>
+                    <div class="muted">—</div>
+                    <div class="muted">—</div>
+                  </div>
+                </div>
+                <div class="note muted">Tip: once approved, you can purchase Rx medicines.</div>
+              </section>
+
+              <section class="rx-doc__section">
+                <div class="section-title">Notes</div>
+                @if (rx.rejectionReason) {
+                  <div class="callout danger">
+                    <div class="callout-title">Rejection reason</div>
+                    <div class="callout-body">{{ rx.rejectionReason }}</div>
+                  </div>
+                } @else {
+                  <div class="callout info">
+                    <div class="callout-title">Status</div>
+                    <div class="callout-body">No additional notes.</div>
+                  </div>
+                }
+              </section>
+
+              <section class="rx-doc__section">
+                <div class="section-title">Document</div>
+                <div class="rx-preview">
+                  <img [src]="rx.imageUrl" alt="Prescription" (error)="onImgError($event)" />
+                </div>
+              </section>
+            </article>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

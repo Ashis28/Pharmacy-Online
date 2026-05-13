@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">catalog-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.catalogservice.service</a> &gt; <span class="el_source">PrescriptionService.java</span></div><h1>PrescriptionService.java</h1><pre class="source lang-java linenums">package com.capg.pharma.catalogservice.service;
+
+import com.capg.pharma.catalogservice.dto.PrescriptionResponse;
+import com.capg.pharma.catalogservice.entity.Prescription;
+import com.capg.pharma.catalogservice.exception.PrescriptionNotFoundException;
+import com.capg.pharma.catalogservice.repository.PrescriptionRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Business logic service for prescription management.
+ *
+ * &lt;p&gt;Handles prescription uploads by customers and review (approve/reject) by admins.
+ * Prescription status transitions: PENDING → APPROVED or PENDING → REJECTED.&lt;/p&gt;
+ */
+@Service
+public class PrescriptionService {
+
+    private final PrescriptionRepository prescriptionRepo;
+
+    /**
+     * Constructs PrescriptionService with the prescription repository.
+     *
+     * @param prescriptionRepo repository for prescription persistence
+     */
+<span class="fc" id="L28">    public PrescriptionService(PrescriptionRepository prescriptionRepo) {</span>
+<span class="fc" id="L29">        this.prescriptionRepo = prescriptionRepo;</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Records a new prescription upload from a customer.
+     *
+     * @param customerId the ID of the uploading customer
+     * @param email      the customer's email address
+     * @param imageUrl   URL of the uploaded prescription image
+     * @return the created prescription as a response DTO
+     */
+    public PrescriptionResponse upload(Long customerId, String email, String imageUrl) {
+<span class="fc" id="L41">        Prescription p = new Prescription();</span>
+<span class="fc" id="L42">        p.setCustomerId(customerId);</span>
+<span class="fc" id="L43">        p.setCustomerEmail(email);</span>
+<span class="fc" id="L44">        p.setImageUrl(imageUrl);</span>
+<span class="fc" id="L45">        return toResponse(prescriptionRepo.save(p));</span>
+    }
+
+    /**
+     * Retrieves all prescriptions currently awaiting admin review.
+     *
+     * @return list of PENDING prescriptions
+     */
+    public List&lt;PrescriptionResponse&gt; getPending() {
+<span class="fc" id="L54">        return prescriptionRepo.findByStatus(Prescription.PrescriptionStatus.PENDING)</span>
+<span class="fc" id="L55">                .stream().map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieves all prescriptions uploaded by a specific customer.
+     *
+     * @param customerId the customer's ID
+     * @return list of prescriptions for that customer
+     */
+    public List&lt;PrescriptionResponse&gt; getByCustomer(Long customerId) {
+<span class="fc" id="L65">        return prescriptionRepo.findByCustomerId(customerId)</span>
+<span class="fc" id="L66">                .stream().map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Approves a pending prescription.
+     *
+     * @param id the prescription's primary key
+     * @return the updated prescription with APPROVED status
+     * @throws PrescriptionNotFoundException if no prescription exists with the given ID
+     */
+    public PrescriptionResponse approve(Long id) {
+<span class="fc" id="L77">        Prescription p = findOrThrow(id);</span>
+<span class="fc" id="L78">        p.setStatus(Prescription.PrescriptionStatus.APPROVED);</span>
+<span class="fc" id="L79">        return toResponse(prescriptionRepo.save(p));</span>
+    }
+
+    /**
+     * Rejects a pending prescription with a reason.
+     *
+     * @param id     the prescription's primary key
+     * @param reason the reason for rejection
+     * @return the updated prescription with REJECTED status and rejection reason
+     * @throws PrescriptionNotFoundException if no prescription exists with the given ID
+     */
+    public PrescriptionResponse reject(Long id, String reason) {
+<span class="fc" id="L91">        Prescription p = findOrThrow(id);</span>
+<span class="fc" id="L92">        p.setStatus(Prescription.PrescriptionStatus.REJECTED);</span>
+<span class="fc" id="L93">        p.setRejectionReason(reason);</span>
+<span class="fc" id="L94">        return toResponse(prescriptionRepo.save(p));</span>
+    }
+
+    /**
+     * Finds a prescription by ID or throws if not found.
+     *
+     * @param id the prescription's primary key
+     * @return the prescription entity
+     * @throws PrescriptionNotFoundException if not found
+     */
+    private Prescription findOrThrow(Long id) {
+<span class="fc" id="L105">        return prescriptionRepo.findById(id)</span>
+<span class="fc" id="L106">                .orElseThrow(() -&gt; new PrescriptionNotFoundException(&quot;Prescription not found with id: &quot; + id));</span>
+    }
+
+    /**
+     * Converts a Prescription entity to a PrescriptionResponse DTO.
+     *
+     * @param p the prescription entity
+     * @return the response DTO
+     */
+    private PrescriptionResponse toResponse(Prescription p) {
+<span class="fc" id="L116">        PrescriptionResponse r = new PrescriptionResponse();</span>
+<span class="fc" id="L117">        r.setId(p.getId());</span>
+<span class="fc" id="L118">        r.setCustomerId(p.getCustomerId());</span>
+<span class="fc" id="L119">        r.setCustomerEmail(p.getCustomerEmail());</span>
+<span class="fc" id="L120">        r.setImageUrl(p.getImageUrl());</span>
+<span class="fc" id="L121">        r.setStatus(p.getStatus().name());</span>
+<span class="fc" id="L122">        r.setRejectionReason(p.getRejectionReason());</span>
+<span class="fc" id="L123">        r.setUploadedAt(p.getUploadedAt());</span>
+<span class="fc" id="L124">        return r;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

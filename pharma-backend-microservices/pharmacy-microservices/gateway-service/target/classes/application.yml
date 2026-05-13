@@ -1,0 +1,147 @@
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      # Global CORS for the gateway — allows Swagger UI and browser clients
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      routes:
+        # ── Business API routes ──────────────────────────────────────────────
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/catalog/**
+          filters:
+            - JwtAuthFilter
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - JwtAuthFilter
+
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - JwtAuthFilter
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - JwtAuthFilter
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - JwtAuthFilter
+
+        # ── OpenAPI / Swagger aggregation routes (no JWT required) ──────────
+        - id: auth-service-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/docs/auth-service/**
+          filters:
+            - RewritePath=/docs/auth-service/(?<remaining>.*), /${remaining}
+
+        - id: catalog-service-docs
+          uri: lb://catalog-service
+          predicates:
+            - Path=/docs/catalog-service/**
+          filters:
+            - RewritePath=/docs/catalog-service/(?<remaining>.*), /${remaining}
+
+        - id: order-service-docs
+          uri: lb://order-service
+          predicates:
+            - Path=/docs/order-service/**
+          filters:
+            - RewritePath=/docs/order-service/(?<remaining>.*), /${remaining}
+
+        - id: admin-service-docs
+          uri: lb://admin-service
+          predicates:
+            - Path=/docs/admin-service/**
+          filters:
+            - RewritePath=/docs/admin-service/(?<remaining>.*), /${remaining}
+
+        - id: payment-service-docs
+          uri: lb://payment-service
+          predicates:
+            - Path=/docs/payment-service/**
+          filters:
+            - RewritePath=/docs/payment-service/(?<remaining>.*), /${remaining}
+
+        - id: notification-service-docs
+          uri: lb://notification-service
+          predicates:
+            - Path=/docs/notification-service/**
+          filters:
+            - RewritePath=/docs/notification-service/(?<remaining>.*), /${remaining}
+
+server:
+  port: 8888
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:pharmacy_super_secret_key_for_hs256_min_32chars}
+
+# Zipkin distributed tracing
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
+# ── Aggregated Swagger UI on the gateway ────────────────────────────────────
+# Access at: http://localhost:8888/swagger-ui.html
+# Each service's API docs are fetched through the gateway via /docs/{service}/v3/api-docs
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    # Each entry becomes a named group in the Swagger UI dropdown
+    urls:
+      - name: Auth Service
+        url: /docs/auth-service/v3/api-docs
+      - name: Catalog Service
+        url: /docs/catalog-service/v3/api-docs
+      - name: Order Service
+        url: /docs/order-service/v3/api-docs
+      - name: Admin Service
+        url: /docs/admin-service/v3/api-docs
+      - name: Payment Service
+        url: /docs/payment-service/v3/api-docs
+      - name: Notification Service
+        url: /docs/notification-service/v3/api-docs

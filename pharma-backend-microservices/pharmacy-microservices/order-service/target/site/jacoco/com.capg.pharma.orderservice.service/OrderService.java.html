@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">order-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.orderservice.service</a> &gt; <span class="el_source">OrderService.java</span></div><h1>OrderService.java</h1><pre class="source lang-java linenums">package com.capg.pharma.orderservice.service;
+
+import com.capg.pharma.orderservice.client.CatalogClient;
+import com.capg.pharma.orderservice.client.PaymentClient;
+import com.capg.pharma.orderservice.messaging.NotificationPublisher;
+import com.capg.pharma.orderservice.dto.*;
+import com.capg.pharma.orderservice.entity.Order;
+import com.capg.pharma.orderservice.entity.OrderItem;
+import com.capg.pharma.orderservice.exception.InvalidOrderStatusException;
+import com.capg.pharma.orderservice.exception.OrderNotFoundException;
+import com.capg.pharma.orderservice.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Business logic service for order management.
+ *
+ * &lt;p&gt;Handles order placement (with medicine price lookup via Feign),
+ * status updates, and revenue reporting. Publishes ORDER_PLACED events
+ * to RabbitMQ after successful order creation.&lt;/p&gt;
+ */
+@Service
+public class OrderService {
+
+<span class="fc" id="L33">    private static final Logger log = LoggerFactory.getLogger(OrderService.class);</span>
+
+    private final OrderRepository orderRepo;
+    private final CatalogClient catalogClient;
+    private final PaymentClient paymentClient;
+    private final NotificationPublisher notificationPublisher;
+
+    /**
+     * Constructs OrderService with required dependencies.
+     *
+     * @param orderRepo            repository for order persistence
+     * @param catalogClient        Feign client for medicine price lookup
+     * @param paymentClient        Feign client for payment processing
+     * @param notificationPublisher RabbitMQ publisher for order events
+     */
+    public OrderService(OrderRepository orderRepo, CatalogClient catalogClient,
+<span class="fc" id="L49">                        PaymentClient paymentClient, NotificationPublisher notificationPublisher) {</span>
+<span class="fc" id="L50">        this.orderRepo = orderRepo;</span>
+<span class="fc" id="L51">        this.catalogClient = catalogClient;</span>
+<span class="fc" id="L52">        this.paymentClient = paymentClient;</span>
+<span class="fc" id="L53">        this.notificationPublisher = notificationPublisher;</span>
+<span class="fc" id="L54">    }</span>
+
+    /**
+     * Places a new order for a customer.
+     * Stock decrement is done AFTER the transaction commits to avoid
+     * holding the transaction open during cross-service Feign calls.
+     */
+    @Transactional
+    public OrderResponse placeOrder(OrderRequest req, String customerEmail) {
+<span class="fc" id="L63">        Order order = new Order();</span>
+<span class="fc" id="L64">        order.setCustomerId(req.getCustomerId());</span>
+<span class="fc" id="L65">        order.setCustomerEmail(customerEmail);</span>
+<span class="fc" id="L66">        order.setDeliveryAddress(req.getDeliveryAddress());</span>
+
+<span class="fc" id="L68">        BigDecimal total = BigDecimal.ZERO;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (OrderRequest.OrderItemRequest itemReq : req.getItems()) {</span>
+<span class="fc" id="L70">            MedicineDto medicine = catalogClient.getMedicineById(itemReq.getMedicineId());</span>
+
+            // Validate stock before building the item
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            if (medicine.getStockQuantity() != null &amp;&amp;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                    medicine.getStockQuantity() &lt; itemReq.getQuantity()) {</span>
+<span class="fc" id="L75">                throw new IllegalArgumentException(</span>
+<span class="fc" id="L76">                        &quot;Insufficient stock for '&quot; + medicine.getName() +</span>
+<span class="fc" id="L77">                        &quot;'. Available: &quot; + medicine.getStockQuantity() +</span>
+<span class="fc" id="L78">                        &quot;, requested: &quot; + itemReq.getQuantity());</span>
+            }
+
+<span class="fc" id="L81">            OrderItem item = new OrderItem();</span>
+<span class="fc" id="L82">            item.setOrder(order);</span>
+<span class="fc" id="L83">            item.setMedicineId(medicine.getId());</span>
+<span class="fc" id="L84">            item.setMedicineName(medicine.getName());</span>
+<span class="fc" id="L85">            item.setQuantity(itemReq.getQuantity());</span>
+<span class="fc" id="L86">            item.setUnitPrice(medicine.getPrice());</span>
+<span class="fc" id="L87">            order.getItems().add(item);</span>
+<span class="fc" id="L88">            total = total.add(medicine.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity())));</span>
+<span class="fc" id="L89">        }</span>
+<span class="fc" id="L90">        order.setTotalAmount(total);</span>
+<span class="fc" id="L91">        Order saved = orderRepo.save(order);</span>
+
+        // Publish notification event — failure is non-critical
+        try {
+<span class="fc" id="L95">            notificationPublisher.publish(new NotificationRequest(</span>
+                    customerEmail,
+<span class="fc" id="L97">                    &quot;Order Placed - #&quot; + saved.getId(),</span>
+<span class="fc" id="L98">                    &quot;Your order #&quot; + saved.getId() + &quot; has been placed. Total: Rs.&quot; + saved.getTotalAmount(),</span>
+                    &quot;ORDER_PLACED&quot;
+            ));
+<span class="pc" id="L101">        } catch (Exception ignored) { /* non-critical */ }</span>
+
+<span class="fc" id="L103">        return toResponse(saved);</span>
+    }
+
+    /**
+     * Decrements stock for all items in an order.
+     * Called AFTER placeOrder transaction commits — runs outside any transaction
+     * so the Feign HTTP call to catalog-service is not wrapped in a JPA transaction.
+     */
+    public void decrementStockForOrder(List&lt;OrderRequest.OrderItemRequest&gt; items) {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        for (OrderRequest.OrderItemRequest itemReq : items) {</span>
+            try {
+<span class="fc" id="L114">                catalogClient.decrementStock(itemReq.getMedicineId(), itemReq.getQuantity());</span>
+<span class="fc" id="L115">                log.info(&quot;[STOCK] Decremented {} units for medicine id={}&quot;,</span>
+<span class="fc" id="L116">                        itemReq.getQuantity(), itemReq.getMedicineId());</span>
+<span class="fc" id="L117">            } catch (Exception e) {</span>
+<span class="fc" id="L118">                log.error(&quot;[STOCK] Failed to decrement stock for medicine id={} qty={}: {}&quot;,</span>
+<span class="fc" id="L119">                        itemReq.getMedicineId(), itemReq.getQuantity(), e.getMessage());</span>
+<span class="fc" id="L120">            }</span>
+<span class="fc" id="L121">        }</span>
+<span class="fc" id="L122">    }</span>
+
+    /**
+     * Retrieves a single order by its ID.
+     *
+     * @param id the order's primary key
+     * @return the order as a response DTO
+     * @throws OrderNotFoundException if no order exists with the given ID
+     */
+    public OrderResponse getById(Long id) {
+<span class="fc" id="L132">        return toResponse(findOrThrow(id));</span>
+    }
+
+    /**
+     * Retrieves all orders placed by a specific customer.
+     *
+     * @param customerId the customer's ID
+     * @return list of orders for that customer
+     */
+    public List&lt;OrderResponse&gt; getByCustomer(Long customerId) {
+<span class="fc" id="L142">        return orderRepo.findByCustomerId(customerId).stream()</span>
+<span class="fc" id="L143">                .map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieves all orders in the system. Admin use only.
+     *
+     * @return list of all orders
+     */
+    public List&lt;OrderResponse&gt; getAll() {
+<span class="fc" id="L152">        return orderRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Updates the status of an order.
+     *
+     * @param id     the order's primary key
+     * @param status the new status string (must match an {@link Order.OrderStatus} enum value)
+     * @return the updated order as a response DTO
+     * @throws OrderNotFoundException      if no order exists with the given ID
+     * @throws InvalidOrderStatusException if the status string is not a valid enum value
+     */
+    public OrderResponse updateStatus(Long id, String status) {
+<span class="fc" id="L165">        Order order = findOrThrow(id);</span>
+        try {
+<span class="fc" id="L167">            order.setStatus(Order.OrderStatus.valueOf(status.toUpperCase()));</span>
+<span class="fc" id="L168">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L169">            throw new InvalidOrderStatusException(&quot;Invalid order status: &quot; + status +</span>
+                    &quot;. Valid values: PENDING, PAID, PACKED, SHIPPED, DELIVERED, CANCELLED&quot;);
+<span class="fc" id="L171">        }</span>
+<span class="fc" id="L172">        return toResponse(orderRepo.save(order));</span>
+    }
+
+    /**
+     * Returns the total count of all orders.
+     *
+     * @return total order count
+     */
+    public long getCount() {
+<span class="fc" id="L181">        return orderRepo.count();</span>
+    }
+
+    /**
+     * Calculates total revenue from DELIVERED orders within a date range.
+     *
+     * @param from start date string (ISO format: yyyy-MM-dd)
+     * @param to   end date string (ISO format: yyyy-MM-dd)
+     * @return total revenue as BigDecimal
+     */
+    public BigDecimal getRevenueBetween(String from, String to) {
+<span class="nc" id="L192">        LocalDateTime fromDt = LocalDate.parse(from).atStartOfDay();</span>
+<span class="nc" id="L193">        LocalDateTime toDt = LocalDate.parse(to).atTime(23, 59, 59);</span>
+<span class="nc" id="L194">        return orderRepo.sumRevenueBetween(fromDt, toDt);</span>
+    }
+
+    /**
+     * Finds an order by ID or throws if not found.
+     *
+     * @param id the order's primary key
+     * @return the order entity
+     * @throws OrderNotFoundException if not found
+     */
+    private Order findOrThrow(Long id) {
+<span class="fc" id="L205">        return orderRepo.findById(id)</span>
+<span class="fc" id="L206">                .orElseThrow(() -&gt; new OrderNotFoundException(&quot;Order not found with id: &quot; + id));</span>
+    }
+
+    /**
+     * Converts an Order entity to an OrderResponse DTO.
+     *
+     * @param o the order entity
+     * @return the response DTO with all fields and items
+     */
+    private OrderResponse toResponse(Order o) {
+<span class="fc" id="L216">        OrderResponse r = new OrderResponse();</span>
+<span class="fc" id="L217">        r.setId(o.getId());</span>
+<span class="fc" id="L218">        r.setCustomerId(o.getCustomerId());</span>
+<span class="fc" id="L219">        r.setCustomerEmail(o.getCustomerEmail());</span>
+<span class="fc" id="L220">        r.setStatus(o.getStatus().name());</span>
+<span class="fc" id="L221">        r.setTotalAmount(o.getTotalAmount());</span>
+<span class="fc" id="L222">        r.setDeliveryAddress(o.getDeliveryAddress());</span>
+<span class="fc" id="L223">        r.setCreatedAt(o.getCreatedAt());</span>
+<span class="fc" id="L224">        r.setItems(o.getItems().stream().map(i -&gt; {</span>
+<span class="nc" id="L225">            OrderResponse.ItemDto d = new OrderResponse.ItemDto();</span>
+<span class="nc" id="L226">            d.setMedicineId(i.getMedicineId());</span>
+<span class="nc" id="L227">            d.setMedicineName(i.getMedicineName());</span>
+<span class="nc" id="L228">            d.setQuantity(i.getQuantity());</span>
+<span class="nc" id="L229">            d.setUnitPrice(i.getUnitPrice());</span>
+<span class="nc" id="L230">            return d;</span>
+<span class="fc" id="L231">        }).collect(Collectors.toList()));</span>
+<span class="fc" id="L232">        return r;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

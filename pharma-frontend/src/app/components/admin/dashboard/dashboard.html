@@ -1,0 +1,137 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard Overview</h1>
+      <p>Welcome back, Admin! Here's what's happening today.</p>
+    </div>
+    <button class="btn-refresh" (click)="loadDashboard()" [disabled]="loading">
+      {{ loading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (error) {
+    <div class="alert-error">{{ error }} <button (click)="loadDashboard()">Retry</button></div>
+  }
+
+  @if (loading) {
+    <div class="loading-grid">
+      @for (i of [1,2,3,4]; track i) { <div class="skeleton-stat"></div> }
+    </div>
+  }
+
+  @if (!loading && stats) {
+    <div class="stats-grid">
+      <div class="stat-card orders">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalOrders }}</span>
+          <span class="stat-label">Total Orders</span>
+        </div>
+        <a routerLink="/admin/orders" class="stat-link">View All &rarr;</a>
+      </div>
+
+      <div class="stat-card prescriptions">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.pendingPrescriptions }}</span>
+          <span class="stat-label">Pending Prescriptions</span>
+        </div>
+        <a routerLink="/admin/prescriptions" class="stat-link">Review &rarr;</a>
+      </div>
+
+      <div class="stat-card stock" [class.alert]="stats.lowStockCount > 0">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.lowStockCount }}</span>
+          <span class="stat-label">Low Stock Items</span>
+        </div>
+        <a routerLink="/admin/medicines" class="stat-link">Manage &rarr;</a>
+      </div>
+
+      <div class="stat-card revenue">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">&#8377;{{ stats.monthlyRevenue | number:'1.0-0' }}</span>
+          <span class="stat-label">Monthly Revenue</span>
+        </div>
+        <span class="stat-link">This Month</span>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="actions-grid">
+        <a routerLink="/admin/medicines" class="action-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span class="action-label">Add Medicine</span>
+        </a>
+        <a routerLink="/admin/prescriptions" class="action-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span class="action-label">Review Prescriptions</span>
+        </a>
+        <a routerLink="/admin/orders" class="action-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span class="action-label">Update Orders</span>
+        </a>
+        <a routerLink="/admin/notifications" class="action-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="action-label">Send Notification</span>
+        </a>
+      </div>
+    </div>
+
+    @if (recentOrders.length > 0) {
+      <div class="recent-orders">
+        <div class="section-header">
+          <h2>Recent Orders</h2>
+          <a routerLink="/admin/orders" class="view-all">View All &rarr;</a>
+        </div>
+        <div class="orders-table">
+          <div class="table-header">
+            <span>Order ID</span><span>Customer</span><span>Amount</span><span>Status</span><span>Date</span>
+          </div>
+          @for (order of recentOrders; track order.id) {
+            <div class="table-row">
+              <span class="order-id">#{{ order.id }}</span>
+              <span class="customer">{{ order.customerEmail }}</span>
+              <span class="amount">&#8377;{{ order.totalAmount | number:'1.2-2' }}</span>
+              <span class="status" [class]="getStatusClass(order.status!)">{{ order.status }}</span>
+              <span class="date">{{ order.createdAt | date:'MMM d, HH:mm' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="empty-orders">
+        <p>No orders yet. Orders will appear here once customers start placing them.</p>
+      </div>
+    }
+
+    @if (lowStockMedicines.length > 0) {
+      <div class="low-stock-section">
+        <div class="section-header">
+          <h2>Low Stock Alert</h2>
+          <a routerLink="/admin/medicines" class="view-all">Manage &rarr;</a>
+        </div>
+        <div class="low-stock-list">
+          @for (med of lowStockMedicines; track med.id) {
+            <div class="low-stock-item" [class.out-of-stock]="med.stockQuantity === 0">
+              <span class="ls-name">{{ med.name }}</span>
+              <span class="ls-stock" [class.zero]="med.stockQuantity === 0">
+                {{ med.stockQuantity === 0 ? 'Out of Stock' : med.stockQuantity + ' left' }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,4 @@
+com\capg\pharma\gatewayservice\config\SwaggerConfig.class
+com\capg\pharma\gatewayservice\GatewayApplication.class
+com\capg\pharma\gatewayservice\filter\JwtAuthFilter.class
+com\capg\pharma\gatewayservice\filter\JwtAuthFilter$Config.class

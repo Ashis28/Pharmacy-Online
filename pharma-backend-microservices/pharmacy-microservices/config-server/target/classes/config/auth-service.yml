@@ -1,0 +1,19 @@
+# Centralized config for auth-service
+# Served by Config Server at http://localhost:8888/auth-service/default
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/auth_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASS:Tapan282@}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: ${JWT_SECRET:pharmacy_super_secret_key_for_hs256_min_32chars}
+  expiration: 86400000
+
+# Admin registration token
+admin:
+  registration:
+    token: ${ADMIN_TOKEN:PHARMA-ADMIN-2026}

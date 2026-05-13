@@ -1,0 +1,132 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🏥 Trusted Online Pharmacy</div>
+      <h1>Your Health, <span class="gradient-text">Our Priority</span></h1>
+      <p>Order medicines online with ease. Fast delivery, authentic products, and expert care — all in one place.</p>
+      <div class="hero-actions">
+        <a routerLink="/medicines" class="btn-hero-primary">
+          Browse Medicines <span>→</span>
+        </a>
+        @if (!auth.isLoggedIn()) {
+          <a routerLink="/register" class="btn-hero-secondary">Get Started Free</a>
+        } @else {
+          <a routerLink="/orders" class="btn-hero-secondary">My Orders</a>
+        }
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="pill-animation">
+          <div class="pill p1">💊</div>
+          <div class="pill p2">🩺</div>
+          <div class="pill p3">💉</div>
+          <div class="pill p4">🧬</div>
+        </div>
+        <div class="hero-stats">
+          @for (stat of stats; track stat.label) {
+            <div class="stat-item">
+              <span class="stat-icon">{{ stat.icon }}</span>
+              <span class="stat-value">{{ stat.value }}</span>
+              <span class="stat-label">{{ stat.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="section-container">
+      <h2 class="section-title">Why Choose PharmaOnline?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔬</div>
+          <h3>100% Authentic</h3>
+          <p>All medicines sourced directly from certified manufacturers and distributors.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Prescription Management</h3>
+          <p>Upload prescriptions digitally. Our pharmacists review and approve within hours.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <h3>Express Delivery</h3>
+          <p>Same-day delivery available in select cities. Track your order in real-time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Secure Payments</h3>
+          <p>Pay via UPI, Card, or Cash on Delivery. All transactions are encrypted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Medicines -->
+  <section class="featured-medicines">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Featured Medicines</h2>
+        <a routerLink="/medicines" class="view-all">View All →</a>
+      </div>
+
+      @if (loading) {
+        <div class="loading-grid">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="skeleton-card"></div>
+          }
+        </div>
+      } @else {
+        <div class="medicines-grid">
+          @for (medicine of featuredMedicines; track medicine.id) {
+            <div class="medicine-card">
+              <div class="medicine-icon">
+                {{ medicine.requiresPrescription ? '💊' : '🟢' }}
+              </div>
+              @if (medicine.requiresPrescription) {
+                <span class="rx-badge">Rx Required</span>
+              }
+              <h3>{{ medicine.name }}</h3>
+              <p class="medicine-desc">{{ medicine.description || 'Quality medicine' }}</p>
+              <div class="medicine-meta">
+                <span class="stock" [class.low]="medicine.stockQuantity <= 10">
+                  {{ medicine.stockQuantity > 0 ? 'In Stock (' + medicine.stockQuantity + ')' : 'Out of Stock' }}
+                </span>
+              </div>
+              <div class="medicine-footer">
+                <span class="price">₹{{ medicine.price | number:'1.2-2' }}</span>
+                @if (auth.isLoggedIn()) {
+                  <button class="btn-add-cart"
+                    (click)="addToCart(medicine)"
+                    [disabled]="medicine.stockQuantity === 0">
+                    🛒 Add
+                  </button>
+                } @else {
+                  <a routerLink="/login" class="btn-add-cart">🔒 Login</a>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  @if (!auth.isLoggedIn()) {
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to get started?</h2>
+        <p>Join thousands of customers who trust PharmaOnline for their healthcare needs.</p>
+        <div class="cta-actions">
+          <a routerLink="/register" class="btn-cta-primary">Create Free Account</a>
+          <a routerLink="/login" class="btn-cta-secondary">Sign In</a>
+        </div>
+      </div>
+    </section>
+  }
+</div>

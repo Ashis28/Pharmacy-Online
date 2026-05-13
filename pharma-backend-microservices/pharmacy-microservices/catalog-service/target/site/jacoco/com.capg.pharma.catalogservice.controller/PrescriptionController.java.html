@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">catalog-service</a> &gt; <a href="index.source.html" class="el_package">com.capg.pharma.catalogservice.controller</a> &gt; <span class="el_source">PrescriptionController.java</span></div><h1>PrescriptionController.java</h1><pre class="source lang-java linenums">package com.capg.pharma.catalogservice.controller;
+
+import com.capg.pharma.catalogservice.dto.PrescriptionResponse;
+import com.capg.pharma.catalogservice.service.PrescriptionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * REST controller for prescription management endpoints.
+ *
+ * &lt;p&gt;Customers can upload prescriptions and view their own.
+ * Admins can list pending prescriptions and approve/reject them.&lt;/p&gt;
+ *
+ * &lt;p&gt;Base path: {@code /api/catalog/prescriptions}&lt;/p&gt;
+ */
+@RestController
+@RequestMapping(&quot;/api/catalog/prescriptions&quot;)
+@Tag(name = &quot;Prescriptions&quot;, description = &quot;Prescription upload and review&quot;)
+public class PrescriptionController {
+
+    private final PrescriptionService prescriptionService;
+
+    /**
+     * Constructs the controller with the prescription service.
+     *
+     * @param prescriptionService the service handling prescription business logic
+     */
+<span class="fc" id="L34">    public PrescriptionController(PrescriptionService prescriptionService) {</span>
+<span class="fc" id="L35">        this.prescriptionService = prescriptionService;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Uploads a new prescription for review.
+     *
+     * &lt;p&gt;The customer's email is extracted from the {@code X-Auth-User} header
+     * injected by the gateway after JWT validation.&lt;/p&gt;
+     *
+     * @param email the authenticated customer's email (from gateway header)
+     * @param body  request body containing {@code customerId} and {@code imageUrl}
+     * @return {@code 200 OK} with the created prescription record
+     */
+    @PostMapping(&quot;/upload&quot;)
+    @Operation(summary = &quot;Upload a prescription image&quot;)
+    public ResponseEntity&lt;PrescriptionResponse&gt; upload(
+            @RequestHeader(&quot;X-Auth-User&quot;) String email,
+            @RequestBody Map&lt;String, String&gt; body) {
+<span class="fc" id="L53">        Long customerId = Long.parseLong(body.get(&quot;customerId&quot;));</span>
+<span class="fc" id="L54">        String imageUrl = body.get(&quot;imageUrl&quot;);</span>
+<span class="fc" id="L55">        return ResponseEntity.ok(prescriptionService.upload(customerId, email, imageUrl));</span>
+    }
+
+    /**
+     * Returns all prescriptions uploaded by the requesting customer.
+     *
+     * @param customerId the customer's ID
+     * @return {@code 200 OK} with the customer's prescription history
+     */
+    @GetMapping(&quot;/my&quot;)
+    @Operation(summary = &quot;Get my prescriptions&quot;)
+    public ResponseEntity&lt;List&lt;PrescriptionResponse&gt;&gt; myPrescriptions(@RequestParam Long customerId) {
+<span class="fc" id="L67">        return ResponseEntity.ok(prescriptionService.getByCustomer(customerId));</span>
+    }
+
+    /**
+     * Returns all prescriptions awaiting admin review. Admin only.
+     *
+     * @return {@code 200 OK} with list of PENDING prescriptions
+     */
+    @GetMapping(&quot;/pending&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Get pending prescriptions (Admin)&quot;)
+    public ResponseEntity&lt;List&lt;PrescriptionResponse&gt;&gt; getPending() {
+<span class="fc" id="L79">        return ResponseEntity.ok(prescriptionService.getPending());</span>
+    }
+
+    /**
+     * Approves a prescription. Admin only.
+     *
+     * @param id the prescription's primary key
+     * @return {@code 200 OK} with the updated prescription (status: APPROVED)
+     */
+    @PutMapping(&quot;/{id}/approve&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Approve a prescription (Admin)&quot;)
+    public ResponseEntity&lt;PrescriptionResponse&gt; approve(@PathVariable(&quot;id&quot;) Long id) {
+<span class="fc" id="L92">        return ResponseEntity.ok(prescriptionService.approve(id));</span>
+    }
+
+    /**
+     * Rejects a prescription with a reason. Admin only.
+     *
+     * @param id   the prescription's primary key
+     * @param body request body containing {@code reason}
+     * @return {@code 200 OK} with the updated prescription (status: REJECTED)
+     */
+    @PutMapping(&quot;/{id}/reject&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    @Operation(summary = &quot;Reject a prescription (Admin)&quot;)
+    public ResponseEntity&lt;PrescriptionResponse&gt; reject(@PathVariable(&quot;id&quot;) Long id,
+                                                        @RequestBody Map&lt;String, String&gt; body) {
+<span class="fc" id="L107">        return ResponseEntity.ok(prescriptionService.reject(id, body.get(&quot;reason&quot;)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

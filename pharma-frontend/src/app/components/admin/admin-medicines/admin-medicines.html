@@ -1,0 +1,133 @@
+<div class="admin-medicines">
+  <div class="section-header">
+    <div>
+      <h1>Medicine Management</h1>
+      <p>Add, edit, and manage the medicine catalog</p>
+    </div>
+    <button class="btn-add" (click)="openAdd()">+ Add Medicine</button>
+  </div>
+
+  @if (success) { <div class="alert alert-success">{{ success }}</div> }
+  @if (loadError) {
+    <div class="alert alert-error">{{ loadError }} <button class="btn-retry" (click)="loadMedicines()">Retry</button></div>
+  }
+
+  @if (showForm) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h2>{{ editingId ? 'Edit Medicine' : 'Add New Medicine' }}</h2>
+          <button class="modal-close" (click)="closeForm()">&#x2715;</button>
+        </div>
+        @if (formError) { <div class="alert alert-error">{{ formError }}</div> }
+        <div class="form-grid">
+          <div class="form-group span-2">
+            <label>Medicine Name <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="form.name" placeholder="e.g. Paracetamol 500mg" />
+          </div>
+          <div class="form-group span-2">
+            <label>Description</label>
+            <textarea [(ngModel)]="form.description" rows="2" placeholder="Brief description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Price (&#8377;) <span class="req">*</span></label>
+            <input type="number" [(ngModel)]="form.price" min="0.01" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label>Stock Quantity <span class="req">*</span></label>
+            <input type="number" [(ngModel)]="form.stockQuantity" min="0" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="date" [(ngModel)]="form.expiryDate" />
+          </div>
+          <div class="form-group">
+            <label>Category ID <span class="optional">(optional)</span></label>
+            <input type="text" [(ngModel)]="form.categoryId" placeholder="Leave blank" />
+          </div>
+          <div class="form-group span-2">
+            <label class="checkbox-row">
+              <input type="checkbox" [(ngModel)]="form.requiresPrescription" />
+              <span class="checkbox-label-text">Requires Prescription (Rx)</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeForm()" [disabled]="saving">Cancel</button>
+          <button class="btn-save" (click)="save()" [disabled]="saving">
+            @if (saving) { <span class="spinner"></span> Saving... }
+            @else { {{ editingId ? 'Update Medicine' : 'Add Medicine' }} }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (deleteConfirm) {
+    <div class="modal-backdrop" (click)="cancelDelete()">
+      <div class="modal-box confirm-box" (click)="$event.stopPropagation()">
+        <h2>Delete Medicine?</h2>
+        <p>This action cannot be undone. The medicine will be permanently removed.</p>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+          <button class="btn-delete-confirm" (click)="deleteMedicine(deleteConfirm!)">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner-large"></div><p>Loading medicines...</p></div>
+  }
+
+  @if (!loading && !loadError) {
+    @if (medicines.length === 0) {
+      <div class="empty-state">
+        <h3>No medicines yet</h3>
+        <p>Click "+ Add Medicine" to add your first medicine to the catalog.</p>
+        <button class="btn-add" (click)="openAdd()">+ Add First Medicine</button>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="medicines-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Type</th><th>Expiry</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (med of medicines; track med.id) {
+              <tr [class.row-low]="med.stockQuantity <= 10 && med.stockQuantity > 0"
+                  [class.row-out]="med.stockQuantity === 0">
+                <td class="col-id">#{{ med.id }}</td>
+                <td class="col-name">
+                  <span class="med-name">{{ med.name }}</span>
+                  @if (med.description) { <span class="med-desc">{{ med.description }}</span> }
+                </td>
+                <td class="col-price">&#8377;{{ med.price | number:'1.2-2' }}</td>
+                <td class="col-stock">
+                  <span class="stock-val"
+                    [class.ok]="med.stockQuantity > 10"
+                    [class.low]="med.stockQuantity <= 10 && med.stockQuantity > 0"
+                    [class.out]="med.stockQuantity === 0">
+                    {{ med.stockQuantity }}{{ med.stockQuantity === 0 ? ' (Out)' : med.stockQuantity <= 10 ? ' (Low)' : '' }}
+                  </span>
+                </td>
+                <td class="col-rx">
+                  <span class="type-badge" [class.rx]="med.requiresPrescription" [class.otc]="!med.requiresPrescription">
+                    {{ med.requiresPrescription ? 'Rx' : 'OTC' }}
+                  </span>
+                </td>
+                <td class="col-expiry">{{ med.expiryDate || '—' }}</td>
+                <td class="col-actions">
+                  <button class="btn-edit" (click)="openEdit(med)">Edit</button>
+                  <button class="btn-del" (click)="confirmDelete(med.id!)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

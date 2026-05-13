@@ -1,0 +1,150 @@
+================================================================================
+  RABBITMQ GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS RABBITMQ?
+-----------------
+RabbitMQ is an open-source message broker that implements the AMQP protocol.
+It enables asynchronous communication between microservices by decoupling
+producers (senders) from consumers (receivers).
+
+In this project, RabbitMQ is used to send ORDER_PLACED notifications from
+order-service to notification-service without blocking the order flow.
+
+--------------------------------------------------------------------------------
+HOW IT WORKS IN THIS PROJECT
+--------------------------------------------------------------------------------
+
+Flow:
+  1. Customer places an order via POST /api/orders
+  2. order-service saves the order to the database
+  3. order-service publishes a NotificationRequest message to RabbitMQ:
+       Exchange: pharmacy.exchange (TopicExchange)
+       Routing Key: notification.send
+  4. notification-service listens on notification.queue
+  5. notification-service receives the message and logs it
+     (can be extended to send email/SMS)
+
+Key Components:
+  - Exchange: pharmacy.exchange (TopicExchange)
+  - Queue: notification.queue (durable)
+  - Routing Key: notification.send
+  - Message Format: JSON (via Jackson2JsonMessageConverter)
+
+--------------------------------------------------------------------------------
+CONFIGURATION
+--------------------------------------------------------------------------------
+
+application.yml (order-service and notification-service):
+
+  spring:
+    rabbitmq:
+      host: ${RABBITMQ_HOST:localhost}
+      port: 5672
+      username: ${RABBITMQ_USER:guest}
+      password: ${RABBITMQ_PASS:guest}
+
+Default credentials: guest / guest
+Default port: 5672 (AMQP), 15672 (Management UI)
+
+--------------------------------------------------------------------------------
+RUNNING RABBITMQ LOCALLY
+--------------------------------------------------------------------------------
+
+Option 1 - Docker (recommended):
+  docker run -d --name rabbitmq \
+    -p 5672:5672 -p 15672:15672 \
+    rabbitmq:3.13-management
+
+Option 2 - Docker Compose (already configured):
+  docker-compose up rabbitmq
+
+Option 3 - Install locally:
+  Windows: Download installer from https://www.rabbitmq.com/install-windows.html
+  Mac:     brew install rabbitmq
+  Linux:   sudo apt-get install rabbitmq-server
+
+--------------------------------------------------------------------------------
+MANAGEMENT UI
+--------------------------------------------------------------------------------
+
+URL: http://localhost:15672
+Username: guest
+Password: guest
+
+From the UI you can:
+  - View queues and their message counts
+  - Publish test messages manually
+  - Monitor exchange bindings
+  - View consumer connections
+
+--------------------------------------------------------------------------------
+PUBLISHER CODE (order-service)
+--------------------------------------------------------------------------------
+
+File: order-service/.../messaging/NotificationPublisher.java
+
+  @Component
+  public class NotificationPublisher {
+      private final RabbitTemplate rabbitTemplate;
+
+      public void publish(NotificationRequest request) {
+          rabbitTemplate.convertAndSend(
+              RabbitMQConfig.EXCHANGE,    // "pharmacy.exchange"
+              RabbitMQConfig.ROUTING_KEY, // "notification.send"
+              request                     // serialized as JSON
+          );
+      }
+  }
+
+--------------------------------------------------------------------------------
+CONSUMER CODE (notification-service)
+--------------------------------------------------------------------------------
+
+File: notification-service/.../listener/NotificationListener.java
+
+  @Component
+  public class NotificationListener {
+      @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+      public void handleNotification(NotificationRequest request) {
+          // Process the notification
+          log.info("Received: type={} to={}", request.getType(), request.getRecipientEmail());
+          // TODO: send email via JavaMailSender
+      }
+  }
+
+--------------------------------------------------------------------------------
+EXTENDING NOTIFICATIONS
+--------------------------------------------------------------------------------
+
+To send real emails, add to notification-service pom.xml:
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+  </dependency>
+
+Then configure in application.yml:
+  spring:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: your-email@gmail.com
+      password: your-app-password
+      properties:
+        mail.smtp.auth: true
+        mail.smtp.starttls.enable: true
+
+And inject JavaMailSender into NotificationListener.
+
+--------------------------------------------------------------------------------
+FAILURE ISOLATION
+--------------------------------------------------------------------------------
+
+If RabbitMQ is down, order placement still succeeds.
+The NotificationPublisher wraps publish() in try-catch and logs a warning.
+This is by design — notifications are non-critical.
+
+To test this: stop RabbitMQ and place an order. The order saves successfully,
+and you'll see a warning log: "[MQ] Failed to publish notification: ..."
+
+================================================================================

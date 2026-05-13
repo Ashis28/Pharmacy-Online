@@ -1,0 +1,248 @@
+================================================================================
+  SLF4J + LOGBACK LOGGING GUIDE - Pharma Microservices Platform
+================================================================================
+
+WHAT IS SLF4J?
+--------------
+SLF4J (Simple Logging Facade for Java) is a logging abstraction layer.
+Your code uses SLF4J API to write log statements, and Logback is the
+actual implementation that handles where and how logs are written.
+
+Spring Boot includes SLF4J + Logback by default — no extra dependency needed.
+
+WHAT IS LOGBACK?
+----------------
+Logback is the logging framework that:
+  - Receives log messages from SLF4J
+  - Formats them with timestamps, thread names, log levels
+  - Writes them to configured destinations (appenders)
+
+In this project, Logback is configured via logback-spring.xml in each service.
+
+================================================================================
+HOW LOGGING IS CONFIGURED IN THIS PROJECT
+================================================================================
+
+Each service has its own logback-spring.xml at:
+  {service}/src/main/resources/logback-spring.xml
+
+Two appenders are configured per service:
+
+1. CONSOLE appender
+   - Writes logs to the Eclipse console (same as before)
+   - Pattern: timestamp [thread] LEVEL logger - message
+
+2. FILE appender (RollingFileAppender)
+   - Writes logs to a file on disk
+   - Rolls over daily (new file each day)
+   - Keeps 30 days of history
+   - File location: {service-working-dir}/logs/{service-name}.log
+
+Log files created when services start:
+  auth-service/logs/auth-service.log
+  catalog-service/logs/catalog-service.log
+  order-service/logs/order-service.log
+  admin-service/logs/admin-service.log
+  payment-service/logs/payment-service.log
+  notification-service/logs/notification-service.log
+
+================================================================================
+THE LOGBACK-SPRING.XML CONFIGURATION
+================================================================================
+
+Each service has this configuration (example: auth-service):
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <configuration>
+
+      <!-- Console appender — logs to Eclipse/terminal -->
+      <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+          <encoder>
+              <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+          </encoder>
+      </appender>
+
+      <!-- File appender — logs to rolling file -->
+      <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+          <file>logs/auth-service.log</file>
+          <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+              <fileNamePattern>logs/auth-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+              <maxHistory>30</maxHistory>
+          </rollingPolicy>
+          <encoder>
+              <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+          </encoder>
+      </appender>
+
+      <!-- Root logger: INFO level, both appenders active -->
+      <root level="INFO">
+          <appender-ref ref="CONSOLE"/>
+          <appender-ref ref="FILE"/>
+      </root>
+
+      <!-- Reduce noise from Spring/Hibernate/Netflix internals -->
+      <logger name="org.springframework" level="WARN"/>
+      <logger name="org.hibernate" level="WARN"/>
+      <logger name="com.netflix" level="WARN"/>
+
+  </configuration>
+
+================================================================================
+LOG FORMAT EXPLAINED
+================================================================================
+
+Example log line:
+  2026-04-30 11:22:22.666 [ntContainer#0-1] INFO  c.c.p.n.listener.NotificationListener - [NOTIFICATION] type=ORDER_PLACED
+
+Breaking it down:
+  2026-04-30 11:22:22.666  → timestamp (date and time to millisecond)
+  [ntContainer#0-1]        → thread name (abbreviated)
+  INFO                     → log level
+  c.c.p.n.listener...      → logger name (abbreviated class name)
+  [NOTIFICATION] type=...  → the actual log message
+
+================================================================================
+LOG LEVELS
+================================================================================
+
+From most to least severe:
+
+  ERROR  → Something failed. Needs immediate attention.
+           Example: Database connection failed, NullPointerException
+
+  WARN   → Something unexpected but recoverable.
+           Example: RabbitMQ connection refused (Zipkin warning)
+
+  INFO   → Normal operational messages.
+           Example: Service started, request processed, notification sent
+
+  DEBUG  → Detailed diagnostic information.
+           Example: SQL queries, method entry/exit
+
+  TRACE  → Very detailed, step-by-step execution info.
+
+This project logs at INFO level by default.
+Spring/Hibernate internals are set to WARN to reduce noise.
+
+================================================================================
+WHERE LOGS ARE USED IN THIS PROJECT
+================================================================================
+
+order-service — NotificationPublisher.java:
+  log.info("[MQ] Notification published: type={} to={}", ...);
+  log.warn("[MQ] Failed to publish notification: {}", e.getMessage());
+
+notification-service — NotificationListener.java:
+  log.info("[NOTIFICATION] type={} to={} subject={}", ...);
+  log.info("[NOTIFICATION] message={}", request.getMessage());
+
+notification-service — NotificationController.java:
+  log.info("Direct notification request received for: {}", ...);
+
+All services — Spring Boot auto-logs:
+  - Service startup and shutdown
+  - Eureka registration
+  - HTTP request handling (at DEBUG level)
+  - Database connection events
+
+================================================================================
+HOW TO ADD LOGGING TO YOUR OWN CLASSES
+================================================================================
+
+Step 1 — Declare the logger at the top of your class:
+
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
+
+  public class MyService {
+      private static final Logger log = LoggerFactory.getLogger(MyService.class);
+  }
+
+Step 2 — Use it in your methods:
+
+  log.info("Processing order for customer: {}", customerId);
+  log.warn("Medicine stock is low: {}", medicineName);
+  log.error("Failed to process payment for order: {}", orderId, exception);
+
+Always use {} placeholders instead of string concatenation:
+  GOOD: log.info("Order {} placed by {}", orderId, email);
+  BAD:  log.info("Order " + orderId + " placed by " + email);
+
+The {} approach is lazy — the string is only built if that log level is active.
+
+================================================================================
+HOW TO VIEW LOG FILES
+================================================================================
+
+Option 1 — Open in Eclipse:
+  The log file is already open in your editor (auth-service/logs/auth-service.log)
+  You can see all log entries from the last service run.
+
+Option 2 — Windows Explorer:
+  Navigate to: {service}/logs/
+  Double-click the .log file to open in Notepad or any text editor.
+
+Option 3 — Command line (tail last 50 lines):
+  Get-Content auth-service\logs\auth-service.log -Tail 50
+
+Option 4 — Command line (watch live):
+  Get-Content auth-service\logs\auth-service.log -Wait -Tail 20
+
+================================================================================
+LOG FILE LOCATIONS
+================================================================================
+
+Active log files (today's logs):
+  auth-service\logs\auth-service.log
+  catalog-service\logs\catalog-service.log
+  order-service\logs\order-service.log
+  admin-service\logs\admin-service.log
+  payment-service\logs\payment-service.log
+  notification-service\logs\notification-service.log
+
+Rolled-over files (previous days):
+  auth-service\logs\auth-service.2026-04-29.log
+  auth-service\logs\auth-service.2026-04-28.log
+  ... (up to 30 days kept)
+
+================================================================================
+ROLLING POLICY EXPLAINED
+================================================================================
+
+TimeBasedRollingPolicy rolls the log file over at midnight each day:
+
+  Day 1: logs/auth-service.log          ← active file
+  At midnight: renamed to auth-service.2026-04-30.log
+  Day 2: logs/auth-service.log          ← new active file
+
+maxHistory=30 means files older than 30 days are automatically deleted.
+
+This prevents log files from growing indefinitely and filling up disk space.
+
+================================================================================
+NOISE REDUCTION
+================================================================================
+
+These loggers are set to WARN to suppress verbose Spring/Hibernate output:
+
+  org.springframework  → Hides Spring bean wiring, security filter chain details
+  org.hibernate        → Hides SQL query logging, session management
+  com.netflix          → Hides Eureka heartbeat and registry refresh messages
+
+To enable DEBUG for your own service code only:
+  Add to logback-spring.xml:
+  <logger name="com.capg.pharma.authservice" level="DEBUG"/>
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Log file location    : {service}/logs/{service-name}.log
+Config file          : {service}/src/main/resources/logback-spring.xml
+Default log level    : INFO
+Rolling policy       : Daily, 30 days retention
+View live logs       : Get-Content {service}\logs\{service}.log -Wait -Tail 20
+Add logger to class  : private static final Logger log = LoggerFactory.getLogger(MyClass.class);
+Log a message        : log.info("Message with value: {}", value);
+
+================================================================================

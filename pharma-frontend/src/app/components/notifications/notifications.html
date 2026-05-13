@@ -1,0 +1,54 @@
+<div class="notifications-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Notifications</h1>
+      <p>Your order updates and activity</p>
+    </div>
+    <button class="btn-refresh" (click)="loadNotifications()">Refresh</button>
+  </div>
+
+  <div class="notifications-body">
+    <div class="delivery-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <div>
+        <strong>Email notifications</strong> — Notifications are also sent to your registered email. Check your inbox for order updates.
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner-large"></div>
+        <p>Loading notifications...</p>
+      </div>
+    }
+
+    @if (!loading && notifications.length === 0) {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <h2>No notifications yet</h2>
+        <p>Place an order to start receiving notifications.</p>
+        <a routerLink="/medicines" class="btn-shop">Browse Medicines</a>
+      </div>
+    }
+
+    @if (!loading && notifications.length > 0) {
+      <div class="notifications-list">
+        @for (notif of notifications; track notif.time + notif.type) {
+          <div class="notif-card" [class]="getTypeClass(notif.type)">
+            <div class="notif-icon">{{ notif.icon }}</div>
+            <div class="notif-content">
+              <div class="notif-header">
+                <span class="notif-title">{{ notif.title }}</span>
+                <span class="notif-time">{{ notif.time | date:'MMM d, y HH:mm' }}</span>
+              </div>
+              <p class="notif-message">{{ notif.message }}</p>
+              @if (notif.orderId) {
+                <a [routerLink]="['/orders']" class="notif-link">View Order #{{ notif.orderId }} &rarr;</a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,374 @@
+<!-- ══ RAZORPAY MODAL — rendered OUTSIDE .payment-page so fixed positioning works ══ -->
+@if (stage === 'razorpay' && order) {
+  <div class="rzp-backdrop" (click)="closeRazorpay()">
+    <div class="rzp-modal" (click)="$event.stopPropagation()">
+
+      <!-- ── Left sidebar ─────────────────────────────────────────── -->
+      <div class="rzp-sidebar">
+        <div class="rzp-logo-wrap">
+          <div class="rzp-logo-icon">R</div>
+          <span class="rzp-logo-text">razorpay</span>
+        </div>
+
+        <div class="rzp-merchant">
+          <div class="rzp-merchant-avatar">P</div>
+          <div class="rzp-merchant-name">PharmaOnline</div>
+          <div class="rzp-merchant-sub">Secure Checkout</div>
+        </div>
+
+        <div class="rzp-amount-block">
+          <div class="rzp-amount-label">Amount</div>
+          <div class="rzp-amount-value">₹{{ order.totalAmount | number:'1.2-2' }}</div>
+        </div>
+
+        <div class="rzp-order-ref">Order #{{ order.id }}</div>
+
+        <div class="rzp-sidebar-footer">🔒 Secured by Razorpay</div>
+      </div>
+
+      <!-- ── Right panel ──────────────────────────────────────────── -->
+      <div class="rzp-panel">
+
+        <!-- Tab bar -->
+        <div class="rzp-tabs">
+          <button class="rzp-tab" [class.active]="rzActiveTab==='card'"       (click)="rzActiveTab='card'">Card</button>
+          <button class="rzp-tab" [class.active]="rzActiveTab==='upi'"        (click)="rzActiveTab='upi'">UPI</button>
+          <button class="rzp-tab" [class.active]="rzActiveTab==='netbanking'" (click)="rzActiveTab='netbanking'">Net Banking</button>
+        </div>
+
+        <!-- ── Card tab ── -->
+        @if (rzActiveTab === 'card') {
+          <div class="rzp-card-form">
+
+            <!-- Live card preview -->
+            <div class="rzp-card-preview" [class.amex]="cardBrand==='amex'" [class.mc]="cardBrand==='mastercard'">
+              <div class="rzp-card-top">
+                <div class="rzp-chip">
+                  <div class="rzp-chip-line"></div>
+                  <div class="rzp-chip-line"></div>
+                </div>
+                <div class="rzp-card-brand">
+                  @if (cardBrand === 'visa')       { <span class="b-visa">VISA</span> }
+                  @else if (cardBrand === 'mastercard') { <span class="b-mc"><span class="mc-l">●</span><span class="mc-r">●</span></span> }
+                  @else if (cardBrand === 'amex')  { <span class="b-amex">AMEX</span> }
+                  @else                            { <span class="b-generic">💳</span> }
+                </div>
+              </div>
+              <div class="rzp-card-num">{{ rzCardNumber || '•••• •••• •••• ••••' }}</div>
+              <div class="rzp-card-bottom">
+                <div>
+                  <div class="rzp-cl">Card Holder</div>
+                  <div class="rzp-cv">{{ rzCardName || 'YOUR NAME' }}</div>
+                </div>
+                <div>
+                  <div class="rzp-cl">Expires</div>
+                  <div class="rzp-cv">{{ rzExpiry || 'MM/YY' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fields -->
+            <div class="rzp-field">
+              <label>Card Number</label>
+              <div class="rzp-input-wrap">
+                <input type="text" [value]="rzCardNumber" (input)="formatCardNumber($event)"
+                  placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number" />
+                <span class="rzp-field-icon">
+                  @if (cardBrand === 'visa') { <span class="b-visa sm">VISA</span> }
+                  @else if (cardBrand === 'mastercard') { <span class="b-mc sm"><span class="mc-l">●</span><span class="mc-r">●</span></span> }
+                  @else { <span>&#x1F4B3;</span> }
+                </span>
+              </div>
+            </div>
+
+            <div class="rzp-field">
+              <label>Cardholder Name</label>
+              <input type="text" [(ngModel)]="rzCardName" placeholder="Name on card" autocomplete="cc-name" />
+            </div>
+
+            <div class="rzp-field-row">
+              <div class="rzp-field">
+                <label>Expiry</label>
+                <input type="text" [value]="rzExpiry" (input)="formatExpiry($event)"
+                  placeholder="MM / YY" maxlength="5" autocomplete="cc-exp" />
+              </div>
+              <div class="rzp-field">
+                <label>CVV</label>
+                <div class="rzp-input-wrap">
+                  <input type="password" [(ngModel)]="rzCvv" placeholder="•••" maxlength="4" autocomplete="cc-csc" />
+                  <span class="rzp-field-icon">CVV</span>
+                </div>
+              </div>
+            </div>
+
+            @if (rzCardError) {
+              <div class="rzp-error">⚠️ {{ rzCardError }}</div>
+            }
+
+            <button class="rzp-pay-btn" (click)="submitRazorpay()">
+              <span class="rzp-r-badge">R</span>
+              Pay ₹{{ order.totalAmount | number:'1.2-2' }}
+            </button>
+          </div>
+        }
+
+        <!-- ── UPI tab ── -->
+        @if (rzActiveTab === 'upi') {
+          <div class="rzp-tab-body">
+            <p class="rzp-hint">Enter your UPI ID to pay</p>
+            <div class="rzp-field">
+              <label>UPI ID</label>
+              <input type="text" placeholder="yourname&#64;upi" />
+            </div>
+            <button class="rzp-pay-btn" (click)="submitRazorpay()">
+              <span class="rzp-r-badge">R</span>
+              Verify &amp; Pay ₹{{ order.totalAmount | number:'1.2-2' }}
+            </button>
+          </div>
+        }
+
+        <!-- ── Net Banking tab ── -->
+        @if (rzActiveTab === 'netbanking') {
+          <div class="rzp-tab-body">
+            <p class="rzp-hint">Select your bank</p>
+            <div class="rzp-bank-grid">
+              @for (bank of ['SBI','HDFC','ICICI','Axis','Kotak','PNB']; track bank) {
+                <button class="rzp-bank-chip" (click)="submitRazorpay()">{{ bank }}</button>
+              }
+            </div>
+            <div class="rzp-field" style="margin-top:0.75rem">
+              <label>All Banks</label>
+              <select>
+                <option value="">-- Select Bank --</option>
+                <option>State Bank of India</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Kotak Mahindra Bank</option>
+                <option>Punjab National Bank</option>
+                <option>Bank of Baroda</option>
+              </select>
+            </div>
+            <button class="rzp-pay-btn" (click)="submitRazorpay()">
+              <span class="rzp-r-badge">R</span>
+              Pay ₹{{ order.totalAmount | number:'1.2-2' }}
+            </button>
+          </div>
+        }
+
+        <div class="rzp-panel-footer">
+          <span>256-bit SSL encrypted</span>
+          <button class="rzp-cancel-btn" (click)="closeRazorpay()">✕ Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ══ PROCESSING OVERLAY ══ -->
+@if (stage === 'processing') {
+  <div class="processing-overlay">
+    <div class="processing-card">
+      <div class="processing-logo">
+        @if (selectedMethod === 'CARD') {
+          <div class="rzp-big-icon">R</div>
+        } @else {
+          <div class="rzp-big-icon">P</div>
+        }
+      </div>
+      <h3>Processing Payment</h3>
+      <p class="processing-amount">₹{{ order?.totalAmount | number:'1.2-2' }}</p>
+
+      <div class="processing-ring-wrap">
+        <svg class="processing-ring" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+          <circle cx="40" cy="40" r="34" fill="none"
+            [attr.stroke]="selectedMethod === 'CARD' ? '#3395FF' : '#e94560'"
+            stroke-width="6" stroke-linecap="round"
+            stroke-dasharray="213" stroke-dashoffset="53"
+            class="ring-progress"/>
+        </svg>
+        <span class="ring-icon"></span>
+      </div>
+
+      <ul class="processing-steps">
+        @for (step of processingSteps; track step.label; let i = $index) {
+          <li [class.active]="i === processingStep"
+              [class.done]="i < processingStep"
+              [class.rzp-active]="i === processingStep && selectedMethod === 'CARD'">
+            <span class="step-num">{{ i + 1 }}</span>
+            <span class="step-label">{{ step.label }}</span>
+          </li>
+        }
+      </ul>
+
+      @if (selectedMethod === 'CARD') {
+        <div class="rzp-powered">
+          <span class="rzp-r-badge sm">R</span> Powered by Razorpay
+        </div>
+      }
+
+      <p class="processing-note">Please do not close or refresh this page</p>
+    </div>
+  </div>
+}
+
+<!-- ══ MAIN PAGE ══ -->
+<div class="payment-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Payment</h1>
+      <p>Complete your order payment securely</p>
+    </div>
+  </div>
+
+  <div class="payment-body">
+
+    @if (loadingOrder) {
+      <div class="loading-state">
+        <div class="spinner-large"></div>
+        <p>Loading order details...</p>
+      </div>
+    }
+
+    @if (!loadingOrder && stage !== 'success' && stage !== 'cod_placed') {
+      <div class="payment-layout">
+
+        <!-- Order Summary -->
+        <div class="order-summary-card">
+          <h2>Order Summary</h2>
+          @if (order) {
+            <div class="order-info">
+              <div class="info-row"><span>Order ID</span><span>#{{ order.id }}</span></div>
+              <div class="info-row"><span>Status</span><span class="status-badge">{{ order.status }}</span></div>
+              <div class="info-row"><span>Delivery Address</span><span>{{ order.deliveryAddress }}</span></div>
+            </div>
+            <div class="order-items">
+              <h3>Items</h3>
+              @for (item of order.items; track item.id) {
+                <div class="order-item">
+                  <span>{{ item.medicineName }} × {{ item.quantity }}</span>
+                  <span>₹{{ ((item.unitPrice ?? 0) * item.quantity) | number:'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+            <div class="total-row">
+              <span>Total Amount</span>
+              <span class="total-amount">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Payment Form -->
+        <div class="payment-form-card">
+          <h2>Select Payment Method</h2>
+
+          <div class="payment-methods">
+            @for (method of paymentMethods; track method.value) {
+              <label class="method-option" [class.selected]="selectedMethod === method.value">
+                <input type="radio" [value]="method.value" [(ngModel)]="selectedMethod" name="paymentMethod" />
+                <span class="method-icon">{{ method.icon }}</span>
+                <div class="method-info">
+                  <span class="method-label">{{ method.label }}</span>
+                  <span class="method-desc">{{ method.desc }}</span>
+                </div>
+                @if (method.value === 'CARD') {
+                  <span class="rzp-inline-badge">Razorpay</span>
+                }
+                <span class="check-icon">✓</span>
+              </label>
+            }
+          </div>
+
+          <!-- UPI QR Panel -->
+          @if (selectedMethod === 'UPI' && order) {
+            <div class="upi-qr-panel">
+              <div class="upi-qr-header">
+                <span class="upi-badge">Scan &amp; Pay</span>
+                <p>Open any UPI app and scan the QR code below</p>
+              </div>
+              <div class="qr-wrapper">
+                <img [src]="qrImageUrl" alt="UPI QR Code" class="qr-image" />
+                <div class="qr-scan-line"></div>
+              </div>
+              <div class="upi-apps">
+                <span class="upi-app-chip">GPay</span>
+                <span class="upi-app-chip">PhonePe</span>
+                <span class="upi-app-chip">Paytm</span>
+                <span class="upi-app-chip">BHIM</span>
+              </div>
+              <div class="upi-id-row">
+                <span class="upi-id-label">UPI ID</span>
+                <span class="upi-id-value">sagarpakar777&#64;okaxis</span>
+              </div>
+              <p class="upi-note">After scanning, click <strong>Pay</strong> below to confirm.</p>
+            </div>
+          }
+
+          @if (error) {
+            <div class="alert-error">⚠️ {{ error }}</div>
+          }
+
+          <div class="secure-badge">Your payment is secured with 256-bit SSL encryption</div>
+
+          <button class="btn-pay" (click)="onPayClick()" [disabled]="stage === 'processing' || !order">
+            @if (selectedMethod === 'CARD') {
+              <span class="rzp-btn-logo">R</span> Pay with Razorpay &nbsp;₹{{ order?.totalAmount | number:'1.2-2' }}
+            } @else if (selectedMethod === 'CASH') {
+              Confirm Order — Pay on Delivery
+            } @else {
+              Pay ₹{{ order?.totalAmount | number:'1.2-2' }}
+            }
+          </button>
+
+          <a routerLink="/orders" class="btn-cancel">Cancel &amp; View Orders</a>
+        </div>
+      </div>
+    }
+
+    <!-- Success (online payment) -->
+    @if (stage === 'success' && paymentResult) {
+      <div class="success-card">
+        <div class="success-anim">
+          <div class="success-ring"></div>
+          <div class="success-checkmark">&#10003;</div>
+        </div>
+        <h2>Payment Successful!</h2>
+        <p>Your order has been confirmed and will be processed shortly.</p>
+        <div class="transaction-details">
+          <div class="txn-row"><span>Transaction ID</span><span class="txn-id">{{ paymentResult.transactionId }}</span></div>
+          <div class="txn-row"><span>Amount Paid</span><span>₹{{ paymentResult.amount | number:'1.2-2' }}</span></div>
+          <div class="txn-row"><span>Payment Status</span><span class="status-success">{{ paymentResult.status }}</span></div>
+          <div class="txn-row"><span>Order ID</span><span>#{{ paymentResult.orderId }}</span></div>
+        </div>
+        <div class="success-actions">
+          <a routerLink="/orders" class="btn-view-orders">View My Orders</a>
+          <a routerLink="/medicines" class="btn-continue">Continue Shopping</a>
+        </div>
+      </div>
+    }
+
+    <!-- COD confirmation (no payment taken) -->
+    @if (stage === 'cod_placed' && order) {
+      <div class="success-card cod-card">
+        <div class="success-anim">
+          <div class="success-ring cod-ring"></div>
+          <div class="success-checkmark cod-check">&#10003;</div>
+        </div>
+        <h2>Order Placed!</h2>
+        <p>Your order has been placed successfully. Pay <strong>₹{{ order.totalAmount | number:'1.2-2' }}</strong> to the delivery agent on arrival.</p>
+        <div class="transaction-details">
+          <div class="txn-row"><span>Order ID</span><span>#{{ order.id }}</span></div>
+          <div class="txn-row"><span>Total Amount</span><span>₹{{ order.totalAmount | number:'1.2-2' }}</span></div>
+          <div class="txn-row"><span>Payment Method</span><span class="cod-badge">Cash on Delivery</span></div>
+          <div class="txn-row"><span>Delivery Address</span><span>{{ order.deliveryAddress }}</span></div>
+        </div>
+        <div class="success-actions">
+          <a routerLink="/orders" class="btn-view-orders">View My Orders</a>
+          <a routerLink="/medicines" class="btn-continue">Continue Shopping</a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="notifications-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🔔 My Notifications</h1>
+      <p>Your order updates and activity</p>
+    </div>
+    <button class="btn-refresh" (click)="loadNotifications()">🔄 Refresh</button>
+  </div>
+
+  <div class="notifications-body">
+
+    <div class="delivery-note">
+      <span>📧</span>
+      <div>
+        <strong>Email notifications</strong> — Notifications are also sent to your registered email
+        via the notification service. Check your inbox for order updates.
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner-large"></div>
+        <p>Loading notifications...</p>
+      </div>
+    }
+
+    @if (!loading && notifications.length === 0) {
+      <div class="empty-state">
+        <span>🔔</span>
+        <h2>No notifications yet</h2>
+        <p>Place an order to start receiving notifications about your orders.</p>
+        <a routerLink="/medicines" class="btn-shop">Browse Medicines</a>
+      </div>
+    }
+
+    @if (!loading && notifications.length > 0) {
+      <div class="notifications-list">
+        @for (notif of notifications; track notif.time + notif.type) {
+          <div class="notif-card" [class]="getTypeClass(notif.type)">
+            <div class="notif-icon">{{ notif.icon }}</div>
+            <div class="notif-content">
+              <div class="notif-header">
+                <span class="notif-title">{{ notif.title }}</span>
+                <span class="notif-time">{{ notif.time | date:'MMM d, y HH:mm' }}</span>
+              </div>
+              <p class="notif-message">{{ notif.message }}</p>
+              @if (notif.orderId) {
+                <a [routerLink]="['/orders']" class="notif-link">View Order #{{ notif.orderId }} →</a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

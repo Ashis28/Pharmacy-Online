@@ -1,0 +1,310 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              PharmaOnline — Frontend Testing Guide                         ║
+║              Framework: Jest + ts-jest  |  Angular 21                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Open a terminal in the project root and run:
+
+    cd pharma-frontend
+    npm run test:jest                  ← run all tests (with pass/fail summary)
+    npm run test:jest:coverage         ← run all tests + show coverage %
+
+  That's it. No browser, no server, no Angular CLI needed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Command                         What it does
+  ─────────────────────────────── ────────────────────────────────────────────
+  npm run test:jest               Run all *.spec.ts files, show verbose output
+  npm run test:jest:coverage      Same + print coverage table per file
+  npx jest --testPathPattern=cart Run only tests matching "cart" in filename
+  npx jest --watch                Re-run tests on every file save (watch mode)
+
+  Examples:
+    npx jest --config jest.config.js --testPathPattern=auth.service
+    npx jest --config jest.config.js --testPathPattern=register
+    npx jest --config jest.config.js --testPathPattern=guard
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TEST FILES — WHAT IS TESTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  File                                          Tests   Description
+  ─────────────────────────────────────────── ─────── ──────────────────────────
+  src/app/services/cart.service.spec.ts          17    Cart logic
+  src/app/services/auth.service.spec.ts          14    Auth / session logic
+  src/app/guards/auth.guard.spec.ts               7    Route protection
+  src/app/components/auth/register/
+    register.spec.ts                             22    Registration form
+  src/app/services/medicine.service.spec.ts       9    Medicine API calls
+  src/app/services/payment.service.spec.ts        3    Payment API calls
+  src/app/services/order.service.spec.ts          8    Order API calls
+  ─────────────────────────────────────────── ─────── ──────────────────────────
+  TOTAL                                          80    7 suites
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DETAILED TEST COVERAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ── CartService (17 tests) ──────────────────────────────────────────────────
+
+    addToCart()
+      ✓ Redirects to /login and returns false when not logged in
+      ✓ Adds medicine to cart when logged in
+      ✓ Increments quantity when same medicine added again
+      ✓ Does not exceed stockQuantity when adding repeatedly
+      ✓ Adds different medicines as separate items
+
+    removeFromCart()
+      ✓ Removes the correct item by ID
+      ✓ Does nothing when item not in cart
+
+    updateQuantity()
+      ✓ Updates quantity correctly
+      ✓ Removes item when quantity set to 0
+      ✓ Removes item when quantity set to negative
+      ✓ Caps quantity at stockQuantity (stock bug fix)
+
+    clearCart()
+      ✓ Empties the cart completely
+
+    Computed signals
+      ✓ cartCount sums all quantities
+      ✓ cartTotal calculates price × quantity
+      ✓ cartCount is 0 for empty cart
+      ✓ cartTotal is 0 for empty cart
+      ✓ cartCount reflects multiple items
+
+  ── AuthService (14 tests) ──────────────────────────────────────────────────
+
+    isLoggedIn()
+      ✓ Returns false when no token in localStorage
+      ✓ Returns true when token exists
+
+    isAdmin() / isCustomer()
+      ✓ isAdmin returns false when no user
+      ✓ isCustomer returns false when no user
+      ✓ isAdmin returns true for admin user
+      ✓ isCustomer returns true for customer user
+      ✓ isAdmin returns false for customer user
+
+    getToken()
+      ✓ Returns null when no token
+      ✓ Returns token from localStorage
+
+    getUserId()
+      ✓ Returns 1 as default when no user
+      ✓ Returns user id from stored user
+
+    logout()
+      ✓ Clears localStorage, resets user, clears cart, navigates to /login
+
+    login()
+      ✓ Stores token and user in localStorage on success
+
+    signup()
+      ✓ Calls POST /api/auth/signup with the request
+
+    Resilience
+      ✓ Returns null when localStorage has corrupt JSON
+
+  ── Route Guards (7 tests) ──────────────────────────────────────────────────
+
+    authGuard
+      ✓ Returns true when user is logged in
+      ✓ Redirects to /login and returns false when not logged in
+
+    adminGuard
+      ✓ Returns true when logged in AND is admin
+      ✓ Redirects to /home when logged in but not admin
+      ✓ Redirects to /login when not logged in at all
+
+    guestGuard
+      ✓ Returns true when user is NOT logged in (guest)
+      ✓ Redirects admin to /admin/dashboard when already logged in
+      ✓ Redirects customer to /home when already logged in
+
+  ── RegisterComponent (22 tests) ────────────────────────────────────────────
+
+    passwordStrength getter
+      ✓ Returns null for empty password
+      ✓ Returns "Too Short" for password < 6 chars
+      ✓ Returns "Weak" for 6-char lowercase only
+      ✓ Returns "Fair" for length + uppercase
+      ✓ Returns "Strong" for length + uppercase + number
+      ✓ Returns "Very Strong" for all 4 criteria met
+      ✓ Includes tips for missing criteria
+
+    onSubmit() — validation
+      ✓ Sets error when name is empty
+      ✓ Sets error when passwords do not match
+      ✓ Sets error when password is too short
+      ✓ Sets error when admin token is empty (admin registration)
+      ✓ Does NOT require admin token for customer registration
+
+    onSubmit() — success
+      ✓ Sets success message and navigates to /login after 2s
+      ✓ Sends adminToken in payload for admin registration
+      ✓ Does NOT send adminToken for customer registration
+
+    onSubmit() — error handling
+      ✓ Shows connection error on HTTP status 0
+      ✓ Shows "Email already registered" on HTTP status 409
+      ✓ Shows "Invalid token." for token-related 400 error
+      ✓ Sets loading to false after any error
+
+    role getter
+      ✓ Returns "ADMIN" when isAdmin is true
+      ✓ Returns "CUSTOMER" when isAdmin is false
+
+  ── MedicineService (9 tests) ───────────────────────────────────────────────
+
+      ✓ getAllMedicines() calls GET /api/catalog/medicines
+      ✓ getMedicineById() calls GET with correct id
+      ✓ searchMedicines() calls GET with name param
+      ✓ addMedicine() calls POST /api/catalog/medicines
+      ✓ updateMedicine() calls PUT with id
+      ✓ deleteMedicine() calls DELETE with id
+      ✓ getLowStockCount() calls GET low-stock-count endpoint
+      ✓ approvePrescription() calls PUT approve endpoint
+      ✓ rejectPrescription() calls PUT reject endpoint with reason
+
+  ── PaymentService (3 tests) ────────────────────────────────────────────────
+
+      ✓ processPayment() calls POST /api/payments/process
+      ✓ getPaymentByOrderId() calls GET /api/payments/order/{id}
+      ✓ processPayment() passes all 4 payment methods (UPI/CARD/NET_BANKING/CASH)
+
+  ── OrderService (8 tests) ──────────────────────────────────────────────────
+
+      ✓ placeOrder() calls POST /api/orders with X-Auth-User header
+      ✓ getOrderById() calls GET /api/orders/{id}
+      ✓ getOrdersByCustomer() calls GET /api/orders/customer/{id}
+      ✓ getAllOrders() calls GET /api/orders
+      ✓ markOrderAsPaid() calls PUT /api/orders/{id}/pay
+      ✓ updateOrderStatus() calls PUT /api/orders/{id}/status
+      ✓ getOrderCount() calls GET /api/orders/count
+      ✓ getRevenue() calls GET with from/to params
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SAMPLE OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  When you run  npm run test:jest  you will see:
+
+    PASS  src/app/services/cart.service.spec.ts
+    PASS  src/app/services/auth.service.spec.ts
+    PASS  src/app/guards/auth.guard.spec.ts
+    PASS  src/app/components/auth/register/register.spec.ts
+    PASS  src/app/services/medicine.service.spec.ts
+    PASS  src/app/services/payment.service.spec.ts
+    PASS  src/app/services/order.service.spec.ts
+
+    Test Suites: 7 passed, 7 total
+    Tests:       80 passed, 80 total
+    Snapshots:   0 total
+    Time:        ~12s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HOW TO ADD A NEW TEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Create a file next to the class you want to test:
+       src/app/services/my-service.spec.ts
+
+  2. Write your test using Jest syntax:
+
+       import { MyService } from './my-service';
+
+       const mockHttp = { get: jest.fn(), post: jest.fn() } as any;
+
+       describe('MyService', () => {
+         let service: MyService;
+
+         beforeEach(() => {
+           jest.clearAllMocks();
+           service = new MyService(mockHttp);
+         });
+
+         it('does something', () => {
+           mockHttp.get.mockReturnValue(of([]));
+           service.getAll().subscribe(result => {
+             expect(result).toEqual([]);
+           });
+         });
+       });
+
+  3. Run:  npm run test:jest
+
+  Jest automatically finds all *.spec.ts files — no registration needed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PROJECT STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pharma-frontend/
+  ├── jest.config.js                    ← Jest configuration
+  ├── package.json                      ← test:jest and test:jest:coverage scripts
+  └── src/
+      ├── __mocks__/
+      │   └── @angular/
+      │       ├── core.ts               ← Stubs: Injectable, signal, inject, etc.
+      │       ├── common.ts             ← Stub: CommonModule, pipes
+      │       ├── common/http.ts        ← Stub: HttpClient
+      │       ├── forms.ts              ← Stub: FormsModule
+      │       ├── router.ts             ← Stub: Router, ActivatedRoute
+      │       └── platform-browser.ts  ← Stub: BrowserModule
+      └── app/
+          ├── services/
+          │   ├── auth.service.spec.ts
+          │   ├── cart.service.spec.ts
+          │   ├── medicine.service.spec.ts
+          │   ├── order.service.spec.ts
+          │   └── payment.service.spec.ts
+          ├── guards/
+          │   └── auth.guard.spec.ts
+          └── components/auth/register/
+              └── register.spec.ts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HOW IT WORKS (TECHNICAL)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Angular 21 ships as ESM-only (.mjs) packages which Jest cannot parse
+  natively. Instead of loading the full Angular runtime, we use lightweight
+  stubs in src/__mocks__/@angular/ that replace Angular's decorators,
+  dependency injection, and signals with simple JavaScript equivalents.
+
+  This means:
+    • Tests run in milliseconds (no browser, no zone.js, no compilation)
+    • Dependencies are injected manually via constructor arguments
+    • HTTP calls are mocked with jest.fn() — no real network requests
+    • localStorage is provided by jsdom (the test environment)
+
+  The stubs implement just enough of the Angular API for the business logic
+  to work:
+    • signal(value)     → simple getter/setter wrapper
+    • computed(fn)      → returns the function itself (call it to get value)
+    • inject(token)     → returns undefined (tests override deps manually)
+    • Injectable/Component/Input → no-op decorators
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Problem                          Solution
+  ──────────────────────────────── ────────────────────────────────────────────
+  "Cannot find module '@angular'"  Run: npm install  (in pharma-frontend/)
+  "jest: command not found"        Run: npm install  (in pharma-frontend/)
+  Test imports fail                Check src/__mocks__/@angular/ stubs exist
+  "signal is not a function"       The @angular/core mock is not being used —
+                                   check jest.config.js moduleNameMapper
+  Test passes locally, fails CI    Ensure NODE_ENV=test and jsdom is installed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
